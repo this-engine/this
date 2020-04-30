@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+		,		{
+			"path": "src",
+			"name": "sources"
+		}
+	],
+	"settings": {}
+}
