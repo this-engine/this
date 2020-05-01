@@ -1,3 +1,5 @@
+## CPP ignores :
+
 # Prerequisites
 *.d
 
@@ -18,7 +20,11 @@
 
 # Fortran module files
 *.mod
-*.smod
+*.smod# Executables
+*.exe
+*.out
+*.app
+
 
 # Compiled Static libraries
 *.lai
@@ -30,3 +36,12 @@
 *.exe
 *.out
 *.app
+
+## CMake generated result :
+
+# binaries result
+bin/*
+
+
+
+
