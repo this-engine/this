@@ -20,6 +20,7 @@ private:
 public:
 
     TString(char * chars) : store(chars) {}         /** TString @brief from char   */
+    TString(const char * chars) : store(chars)  {}  /** TString @brief from const char   */
     TString(std::string string) : store(string) {}  /** TString @brief from string */
 
     operator std::string() {return store;}          /** TString @brief to string   */

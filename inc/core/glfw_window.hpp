@@ -6,6 +6,9 @@
 
 #include "window.hpp"
 
+class GLFWwindow;
+
+
 /**
  *  TSDLWindow
  *  @brief      Simple wrapper around sdl
@@ -13,6 +16,23 @@
  */
 class TGLFWWindow  : public TWindow
 {
+private :
+
+    GLFWwindow* glfw_window;
+
 public:
     TGLFWWindow(TString name, size_t x, size_t y) : TWindow(name, x,y){}
+
+    // TWindow Overrides 
+    virtual void initWindow() override final;
+    virtual void loopWindow() override final;
+    virtual int  quitWindow() override final;
+
+    /** 
+     *  handleError 
+     *  @brief callback called by glfw when an error occurs
+     */ 
+    static void handleError(int error, const char* description);
+
+
 };

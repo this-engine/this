@@ -22,38 +22,14 @@ private:
 
 protected:
 
-    /** 
-     *  initWindow 
-     *  @brief do the necessary sdl calls to have a valid window
-     */ 
-    virtual void initWindow();
-
-
-    /** 
-     *  loopWindow 
-     *  @brief wait for
-     */ 
-    virtual void loopWindow();
-
-
-    /** 
-     *  quitWindow 
-     *  @brief  react to SDL quit event
-     *  @return error code
-     */ 
-    virtual int quitWindow();
+    // TWindow Overrides 
+    virtual void initWindow() override final;
+    virtual void loopWindow() override final;
+    virtual int  quitWindow() override final;
 
 public:
 
     /** simple constructor basedon parent */
     TSDLWindow(TString name, size_t x, size_t y) : TWindow(name, x, y){}
-
-    /** window class override */
-    virtual void run() override final
-    {
-        initWindow();
-        loopWindow();
-        quitWindow();
-    }
 
 };
