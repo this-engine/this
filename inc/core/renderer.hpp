@@ -17,47 +17,24 @@ class TWindow;
 class TRenderer
 {
 public: 
-    /** TRenderer @brief constructor is default   */ 
-    TRenderer() = default;
+
+    /** TRenderer @brief constructor with window reference   */ 
+    TRenderer(TWindow *window);
 
     /** TRenderer @brief destructor is default, but need to be virtual   */ 
     virtual ~TRenderer() = default;
 
     /** 
      *  init 
-     *  @brief  set this renderer. very important function. 
-     *  @note   runs on main thread 
+     *  @brief  tries to get ressources to start rendering
      */ 
-    virtual void init(TWindow * window);
-
-    /** 
-     *  startRenderThread 
-     *  @brief  simply launch renderThread function
-     *  @note   runs on main thread 
-     */ 
-    void startRenderThread();
-
-    /** 
-     *  continueThread 
-     *  @brief  whether we should stop our rendering
-     *  @todo   implement thread safety
-     */ 
-    bool continueThread() const {return !StopRenderThread;}
-
-    /** 
-     *  continueThread 
-     *  @brief  whether we should stop our rendering
-     *  @todo   implement thread safety
-     */ 
-    bool isRunning() const {return RenderThreadIsRunning;}
-
-protected:
+    virtual void init() {}
 
     /**
-     *  renderThread
+     *  renderFrame
      *  @brief      MOST important function, run on a separate thread (thanks to OMP)
      */
-    virtual void renderThread();
+    virtual void renderFrame();
 
 private:
 

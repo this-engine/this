@@ -12,7 +12,7 @@
 #include <glm/gtc/type_ptr.hpp>
 // this includes
 #include "gl_renderer.hpp"
-#include "glfw_window.hpp"
+#include "gl_window.hpp"
 
 
 
@@ -51,13 +51,24 @@ static const char* fragment_shader_text =
 static GLuint vertex_buffer, vertex_shader, fragment_shader, program;
 static GLint mvp_location, vpos_location, vcol_location;
 
-void TGLRenderer::init(TWindow * window)
-{
-    TRenderer::init(window);
-    GLFWWindow = dynamic_cast<TGLFWWindow *>(window);
 
-    if(!GLFWWindow)
-        
+TGLRenderer::TGLRenderer(TWindow *window) : TRenderer(window)
+{
+    auto tglwindow = dynamic_cast<TGLWindow *>(window);
+    if(!tglwindow)
+        return;
+    
+    TargetWindow = tglwindow->GlfwWindow.get();
+}
+
+void TGLRenderer::init()
+{
+    if(!TargetWindow)
+        return;
+
+    // init glad;
+
+    gladLoadGL();
 
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
@@ -86,29 +97,34 @@ void TGLRenderer::init(TWindow * window)
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(vertices[0]), (void*) (sizeof(float) * 2));
+
+
+    return;
 }
 
-void TGLRenderer::renderThread()
+void TGLRenderer::renderFrame()
 {
-    TRenderer::renderThread();
-    while(continueThread() && GLFWWindow->glfw_window)
-    {
-        float ratio;
-        int width, height;
-        glm::mat4 m(1.0f), p, mvp;
+
+    if(!TargetWindow)
+        return;
+
+    TRenderer::renderFrame();
+    float ratio;
+    int width, height;
+    glm::mat4 m(1.0f), p, mvp;
  
-        glfwGetFramebufferSize(GLFWWindow->glfw_window.get(), &width, &height);
-        ratio = width / (float) height;
+    glfwGetFramebufferSize(TargetWindow, &width, &height);
+    ratio = width / (float) height;
  
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
+    glViewport(0, 0, width, height);
+    glClearColor(0.f,1.f,1.f,1.f);
+    //glClear(GL_COLOR_BUFFER_BIT);
  
-        mvp = p* m;
+    mvp = p* m;
  
-        glUseProgram(program);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) glm::value_ptr(mvp));
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+    glUseProgram(program);
+    glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) glm::value_ptr(mvp));
+    glDrawArrays(GL_TRIANGLES, 0, 3);
  
-        glfwSwapBuffers(GLFWWindow->glfw_window.get());
-    }
+    glfwSwapBuffers(TargetWindow);
 }

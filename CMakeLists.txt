@@ -20,10 +20,9 @@ add_definitions("-Wall" "-g")
 find_package(OpenMP)
 # glad library :
 add_subdirectory(lib/glad)
-# glew
-#find_package(GLEW REQUIRED)
 #glfw
 find_package(glfw3 3.3 REQUIRED)
+
 
 ##
 ## Core :
@@ -40,22 +39,6 @@ endif()
 target_include_directories(core PUBLIC inc/core)
 
 ##
-## Rendering :
-##
-file(GLOB RENDERING_SRC CONFIGURE_DEPENDS src/rendering/*.cpp)
-message( ${RENDERING_SRC} )
-add_library(rendering ${RENDERING_SRC})
-
-# OPenMP
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(rendering PUBLIC OpenMP::OpenMP_CXX)
-endif()
-
-target_include_directories(rendering PUBLIC inc/rendering)
-target_link_libraries(rendering PUBLIC core)
-
-
-##
 ## thisGL :
 ##
 
@@ -64,21 +47,14 @@ message( ${THISGL_SRC} )
 add_library(thisGL ${THISGL_SRC})
 target_link_libraries(thisGL PUBLIC glad)
 
-#if (GLEW_FOUND)
-#    include_directories(${GLEW_INCLUDE_DIRS})
-#    link_libraries(${GLEW_LIBRARIES})
-#endif()
-
 # OPenMP
 if(OpenMP_CXX_FOUND)
     target_link_libraries(thisGL PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
-target_link_libraries(thisGL PUBLIC GLEW)
 target_link_libraries(thisGL PUBLIC glfw)
 target_link_libraries(thisGL PUBLIC core)
 target_link_libraries(thisGL PUBLIC glad)
-target_link_libraries(thisGL PUBLIC rendering)
 target_include_directories(thisGL PRIVATE inc/thisGL)
 
 ##
@@ -88,4 +64,3 @@ add_executable(this-demo src/main.cpp)
 target_include_directories(this-demo PUBLIC inc)
 target_link_libraries(this-demo core)
 target_link_libraries(this-demo thisGL)
-target_link_libraries(this-demo rendering)

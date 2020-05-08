@@ -1,5 +1,6 @@
 #include "core/app.hpp"
-#include "thisGL/glfw_window.hpp"
+#include "thisGL/gl_window.hpp"
+#include "thisGL/gl_renderer.hpp"
 
 #include <omp.h>
 // define an app to use in our program
@@ -9,8 +10,7 @@ public:
 
     void makeWindow(const TString &app_name)
     {
-        MainWindow.reset(nullptr);
-        auto window = new TGLFWWindow(app_name, 640, 480);
+        auto window = new TGLWindow(app_name, 640, 480);
         MainWindow.reset(window);
     }
 
@@ -25,7 +25,7 @@ public:
     }
 
 
-    virtual void begin() override final { makeWindow(appName); }
+    virtual void begin() override final { makeWindow(appName); TApp<myApp>::begin();}
     virtual void end() override final { destroyWindow();  }
 
 
@@ -36,12 +36,15 @@ private :
 
 int main (int argc, char* args[]) 
 {
-  // init
-  myApp::appInstance().begin();
+    // init
+    myApp::appInstance().begin();
   
-  // run
-  myApp::appInstance().main();
+    // run
+    myApp::appInstance().main();
 
-  // quit
-  return 0;
+    // clean
+    myApp::appInstance().end();
+
+    // quit
+    return 0;
 }

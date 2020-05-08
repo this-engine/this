@@ -8,7 +8,7 @@
 #include "renderer.hpp"
 
 
-class TGLFWWindow;
+class GLFWwindow;
 
 /**
  *  TGLRenderer
@@ -18,31 +18,28 @@ class TGLFWWindow;
  */
 class TGLRenderer : public TRenderer
 {
-public: 
+public:
+
+    /** TRenderer @brief constructor with window reference   */ 
+    TGLRenderer(TWindow *window);
+
 
     /** 
      *  init 
      *  @brief  set this renderer. very important function. 
      *  @note   runs on main thread 
      */ 
-    virtual void init(TWindow * window) override final;
+    virtual void init() override final;
 
 protected:
 
-    /**
-     *  renderThread
-     *  @brief      MOST important function, run on a separate thread (thanks to OMP)
-     */
-    virtual void renderThread() override;
+    // renderer override
+    virtual void renderFrame() override;
 
 
 private:
 
-    /**
-     *  GLFWWindow
-     *  @brief      glfw window container 
-     */
-    TGLFWWindow * GLFWWindow;
+    GLFWwindow * TargetWindow;
 
 
 };

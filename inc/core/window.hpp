@@ -5,6 +5,7 @@
 #ifndef _this_window_
 #define _this_window_
 
+#include <memory>
 #include "core.hpp"
 
 
@@ -31,18 +32,18 @@ protected:
     TString windowTitle;
 
     /** 
-     *  renderer 
+     *  Renderer 
      *  @brief  the class that takes care of producing pixels inside your window
      */ 
-    TRenderer* renderer;
+    std::unique_ptr<TRenderer> Renderer;
 
 public:
     /** TSDLWindow @brief constructor with enougth info   */ 
     TWindow(TString name, size_t x, size_t y);
 
     /** ~TSDLWindow @brief destructor, no need to do anything yet  */ 
-    virtual ~TWindow() = default;
-
+    virtual ~TWindow();
+    
     /** 
      *  shouldClose 
      *  @brief      should return true if you want that window to close
@@ -51,12 +52,23 @@ public:
     virtual bool shouldClose() = 0;
 
     /** 
-     *  refreshEvent 
-     *  @brief      implement here any function that needs to be called
-     *              from main thread.
-     *  @note       this will be run from main thread
+     *  windowEvent 
+     *  @brief      gets window events (resize, move, close, etc.)
      */ 
-    virtual void refreshEvent() {}
+    virtual void windowEvents() {}
+
+    /** 
+     *  render 
+     *  @brief      render the content of the window
+     */ 
+    virtual void render() {}
+
+    /** 
+     *  init 
+     *  @brief      initialize object
+     *  @todo       move to object interface
+     */ 
+    virtual void init();
   
 
 

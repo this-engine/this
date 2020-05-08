@@ -7,7 +7,7 @@
 #include <omp.h>
 #include <assert.h>
 
-void TRenderer::init(TWindow * window)
+TRenderer::TRenderer(TWindow *window)
 {
     assert(window != nullptr);
     RenderThreadIsRunning = false;
@@ -15,13 +15,8 @@ void TRenderer::init(TWindow * window)
 }
 
 
-void TRenderer::startRenderThread()
-{
-    #pragma omp task
-    renderThread();
-}
 
-void TRenderer::renderThread()
+void TRenderer::renderFrame()
 {
     RenderThreadIsRunning = true;
 }

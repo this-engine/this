@@ -124,7 +124,8 @@ DERIVEDAPP* TApp<DERIVEDAPP>::app = nullptr;
 template<typename DERIVEDAPP>
 void TApp<DERIVEDAPP>::begin()
 {
-
+    if(MainWindow)
+        MainWindow->init();
 }
 
 template<typename DERIVEDAPP>
@@ -136,15 +137,25 @@ void TApp<DERIVEDAPP>::end()
 template<typename DERIVEDAPP>
 void TApp<DERIVEDAPP>::main()
 {
-    #pragma omp critical (refresh)
+//#pragma omp parallel
     {
-        while(!MainWindow->shouldClose())
+        //#pragma omp single
+        {
+            while(!MainWindow->shouldClose())
             {
-                MainWindow->refreshEvent();
+                // must be run on main thread;
+                MainWindow->windowEvents();
+
+                //#pragma omp taskgroup
+                {
+                    //#pragma omp task
+                    { MainWindow->render(); }
+                }
             }
         
-    }
+        }
     
+    }
 }
 
 #endif // _this_app_

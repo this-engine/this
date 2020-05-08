@@ -75,7 +75,8 @@
             "codecvt": "cpp",
             "complex": "cpp",
             "typeindex": "cpp",
-            "valarray": "cpp"
+            "valarray": "cpp",
+            "*.ipp": "cpp"
         }
 	}
 }

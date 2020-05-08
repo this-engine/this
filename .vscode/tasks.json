@@ -15,19 +15,19 @@
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceRoot}/bin"
-			},
+            },
+            "dependsOn" : ["generate"],
 			"command": "make -j8",
 			"problemMatcher": {
 				"base": "$gcc",
 				"fileLocation": ["absolute"]
 			}
-		},
-		{
-			"label": "generate-build-run",
-			"dependsOrder": "sequence",
-			"dependsOn" : ["generate", "build"],
-			"problemMatcher": []
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "rm -Rf bin/*",
+            "problemMatcher": []
 		}
-
 	]
 }

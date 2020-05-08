@@ -20,7 +20,7 @@ void glfwDestroyWindow(GLFWwindow* window);
  *  @brief      Simple wrapper around sdl
  *  @todo       Implements resolution checking
  */
-class TGLFWWindow  : public TWindow
+class TGLWindow  : public TWindow
 {
 
 protected:
@@ -34,7 +34,7 @@ public:
      *  @brief  The actual glfw window of this class
      *  @todo   use smart pointer
      */ 
-    std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> glfw_window;
+    std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> GlfwWindow;
 
 
 public :
@@ -60,14 +60,16 @@ public :
 
     // window overrides
     virtual bool shouldClose()  override final;
-    virtual void refreshEvent() override final;
+    virtual void windowEvents() override final;
+
+    virtual void render() override final;
 
 
     /** Constructor */
-    TGLFWWindow(TString name, size_t x, size_t y);
+    TGLWindow(TString name, size_t x, size_t y);
     
     /** post window cleanup */
-    ~TGLFWWindow();
+    ~TGLWindow();
 
 };
 
