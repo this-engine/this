@@ -2,9 +2,15 @@
 // This work is licensed under the terms of the MIT license. 
 // For a copy, see <https://opensource.org/licenses/MIT>.
 
-#pragma once
+#ifndef _this_window_
+#define _this_window_
 
 #include "core.hpp"
+
+
+// forward declaration
+class TRenderer;
+
 
 /**
  *  TWindow
@@ -24,29 +30,11 @@ protected:
     /** Name @brief Name of the window  */ 
     TString windowTitle;
 
-
     /** 
-     *  initWindow 
-     *  @brief do the necessary sdl calls to have a valid window
+     *  renderer 
+     *  @brief  the class that takes care of producing pixels inside your window
      */ 
-    virtual void initWindow() = 0;
-
-
-    /** 
-     *  loopWindow 
-     *  @brief wait for
-     */ 
-    virtual void loopWindow() = 0;
-
-
-    /** 
-     *  quitWindow 
-     *  @brief  react to SDL quit event
-     *  @return error code
-     */ 
-    virtual int quitWindow() = 0;
-
-
+    TRenderer* renderer;
 
 public:
     /** TSDLWindow @brief constructor with enougth info   */ 
@@ -55,15 +43,38 @@ public:
     /** ~TSDLWindow @brief destructor, no need to do anything yet  */ 
     virtual ~TWindow() = default;
 
+
     /** 
-     *  run() 
-     *  @brief  opens a window and keep it open until stated otherwise
+     *  init 
+     *  @brief very important function. init and create GL Context
      */ 
-    void run() 
-    {
-        initWindow();
-        loopWindow();
-        quitWindow();
-    }
+    virtual void init() = 0;
+
+
+    /** 
+     *  deinit 
+     *  @brief very important function. clear and get rid of GL Context
+     */ 
+    virtual void deinit() = 0;
+
+
+    /** 
+     *  shouldClose 
+     *  @brief      should return true if you want that window to close
+     *  @returns    true if should close, false otherwise 
+     */ 
+    virtual bool shouldClose() = 0;
+
+    /** 
+     *  refreshEvent 
+     *  @brief      implement here any function that needs to be called
+     *              from main thread.
+     *  @note       this will be run from main thread
+     */ 
+    virtual void refreshEvent() {}
+  
+
 
 };
+
+#endif // _this_window_
