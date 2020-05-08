@@ -69,8 +69,15 @@ public:
      *  @todo       move to object interface
      */ 
     virtual void init();
-  
 
+
+protected:
+  
+    /** 
+     *  deleteWindow 
+     *  @brief  do the necessary closing of the window
+     */ 
+    virtual void deleteWindow();
 
 };
 

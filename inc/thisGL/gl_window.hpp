@@ -24,15 +24,18 @@ class TGLWindow  : public TWindow
 {
 
 protected:
-
-    void deleteWindow();
+    /** 
+     *  deleteWindow 
+     *  @brief  do the necessary closing of the window
+     */ 
+    virtual void deleteWindow() override;
 
 public:
 
     /** 
      *  glfw_window 
      *  @brief  The actual glfw window of this class
-     *  @todo   use smart pointer
+     *  @note   use smart pointer to delete with glfw
      */ 
     std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> GlfwWindow;
 
@@ -43,7 +46,7 @@ public :
      *  handleError 
      *  @brief  callback called by glfw when an error occurs
      *  @param  error   
-     *  @note   glfw uses C-style 
+     *  @note   glfw uses C-style callback
      */ 
     static void handleError(int error, const char* description);
 

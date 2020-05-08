@@ -105,8 +105,8 @@ void TGLRenderer::init()
 void TGLRenderer::renderFrame()
 {
 
-    if(!TargetWindow)
-        return;
+    //if(!TargetWindow)
+    //    return;
 
     TRenderer::renderFrame();
     float ratio;

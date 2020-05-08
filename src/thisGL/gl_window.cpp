@@ -27,13 +27,15 @@ void TGLWindow::handleQuit(GLFWwindow * window)
 
 void TGLWindow::deleteWindow()
 {
-    GlfwWindow.reset(nullptr);
+    TWindow::deleteWindow();
+    if(GlfwWindow)
+        GlfwWindow.reset(nullptr);
 }
 
 
 bool TGLWindow::shouldClose()
 {
-    return  !(GlfwWindow) || glfwWindowShouldClose(GlfwWindow.get());
+    return  !(GlfwWindow);// || glfwWindowShouldClose(GlfwWindow.get());
 }
 
 void TGLWindow::windowEvents()
@@ -43,8 +45,9 @@ void TGLWindow::windowEvents()
 
 void TGLWindow::render()
 {
-        // start rendering
-    Renderer->renderFrame();
+    // start rendering
+    if(Renderer)
+        Renderer->renderFrame();
 }
 
 TGLWindow::TGLWindow(TString name, size_t x, size_t y) : TWindow(name, x,y), GlfwWindow(nullptr, &glfwDestroyWindow)
@@ -81,6 +84,7 @@ TGLWindow::TGLWindow(TString name, size_t x, size_t y) : TWindow(name, x,y), Glf
 
 TGLWindow::~TGLWindow()
 {
-        // lets get rid of glfw
-        glfwTerminate();
+    deleteWindow();
+    // lets get rid of glfw
+    glfwTerminate();
 }

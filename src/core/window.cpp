@@ -12,7 +12,8 @@ TWindow::TWindow(TString name, size_t x, size_t y)  :   windowWidth(x), windowHe
 
 TWindow::~TWindow()
 {
-    Renderer.reset(nullptr);
+    if(Renderer)
+        Renderer.reset(nullptr);
 }
 
 void TWindow::init()
@@ -24,3 +25,7 @@ void TWindow::init()
 }
 
 
+void TWindow::deleteWindow()
+{
+    Renderer.reset(nullptr);
+}
