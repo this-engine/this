@@ -7,10 +7,13 @@
 
 
 #include "window.hpp"
-//#include <memory>
+#include <memory>
 
+// forward declarations
 class GLFWwindow;
 class TRenderer;
+void glfwDestroyWindow(GLFWwindow* window);
+
 
 /**
  *  TSDLWindow
@@ -19,15 +22,22 @@ class TRenderer;
  */
 class TGLFWWindow  : public TWindow
 {
-public :
+
+protected:
+
+    void deleteWindow();
+
+public:
 
     /** 
      *  glfw_window 
      *  @brief  The actual glfw window of this class
-     *  @note   unique ptr 
+     *  @todo   use smart pointer
      */ 
-    GLFWwindow * glfw_window;
+    std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> glfw_window;
 
+
+public :
 
     /** 
      *  handleError 
@@ -49,8 +59,6 @@ public :
 
 
     // window overrides
-    virtual void init()         override final;
-    virtual void deinit()       override final;
     virtual bool shouldClose()  override final;
     virtual void refreshEvent() override final;
 

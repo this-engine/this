@@ -94,7 +94,7 @@ public:
      *  MainWindow
      *  @brief      window to draw to
      */
-    std::shared_ptr<TWindow> MainWindow;
+    std::unique_ptr<TWindow> MainWindow;
 
 
 public :
@@ -142,6 +142,7 @@ void TApp<DERIVEDAPP>::main()
             {
                 MainWindow->refreshEvent();
             }
+        
     }
     
 }

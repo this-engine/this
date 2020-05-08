@@ -9,19 +9,14 @@ public:
 
     void makeWindow(const TString &app_name)
     {
-        MainWindow.reset( new TGLFWWindow(app_name, 640, 480));
-        if(MainWindow)
-        {
-            MainWindow->init(); 
-            return;
-        }
-        return;
+        MainWindow.reset(nullptr);
+        auto window = new TGLFWWindow(app_name, 640, 480);
+        MainWindow.reset(window);
     }
 
     void destroyWindow()
     {
-      if(MainWindow != NULL)
-        MainWindow->deinit();
+        MainWindow.reset(nullptr);
     }
 
     myApp() 

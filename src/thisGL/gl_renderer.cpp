@@ -97,7 +97,7 @@ void TGLRenderer::renderThread()
         int width, height;
         glm::mat4 m(1.0f), p, mvp;
  
-        glfwGetFramebufferSize(GLFWWindow->glfw_window, &width, &height);
+        glfwGetFramebufferSize(GLFWWindow->glfw_window.get(), &width, &height);
         ratio = width / (float) height;
  
         glViewport(0, 0, width, height);
@@ -109,6 +109,6 @@ void TGLRenderer::renderThread()
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) glm::value_ptr(mvp));
         glDrawArrays(GL_TRIANGLES, 0, 3);
  
-        glfwSwapBuffers(GLFWWindow->glfw_window);
+        glfwSwapBuffers(GLFWWindow->glfw_window.get());
     }
 }

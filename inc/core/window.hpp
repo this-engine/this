@@ -43,21 +43,6 @@ public:
     /** ~TSDLWindow @brief destructor, no need to do anything yet  */ 
     virtual ~TWindow() = default;
 
-
-    /** 
-     *  init 
-     *  @brief very important function. init and create GL Context
-     */ 
-    virtual void init() = 0;
-
-
-    /** 
-     *  deinit 
-     *  @brief very important function. clear and get rid of GL Context
-     */ 
-    virtual void deinit() = 0;
-
-
     /** 
      *  shouldClose 
      *  @brief      should return true if you want that window to close
