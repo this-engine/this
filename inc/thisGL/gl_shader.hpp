@@ -30,12 +30,6 @@ class TGLShader : public TString
 protected:
 
     /** 
-     *  compile_shader 
-     *  @brief  generate the executable shader
-     */ 
-    GLuint compileShader();
-
-    /** 
      *  Type 
      *  @brief  shader type
      */ 
@@ -62,13 +56,34 @@ public:
     {}
 
     /** 
-     *  load_shaders 
-     *  @brief  compile and load shaders
-     *  @param  vertex_shader_source    a vertex shader
-     *  @param  fragment_shader_source  a fragment shader
-     *  @return the program id of the loaded program or 0 if it failed 
+     *  compile_shader 
+     *  @brief  generate the executable shader
+     *  @todo   improve description
      */ 
-    static GLuint [[nodiscard]] loadShaders(TGLShader vertex_shader_source, TGLShader fragment_shader_source);
+    GLuint compileShader();
+
+    /** 
+     *  type() 
+     *  @return     Type
+     */ 
+    inline TGLShaderType type() const {return Type;}
+
+    /** 
+     *  type 
+     *  @return     the correct GLenum for this
+     */ 
+    inline GLenum glType() const
+    {
+        switch (type())
+        {
+        case TGLShaderType::Vertex:
+            return GL_VERTEX_SHADER;
+        case TGLShaderType::Fragment:
+            return GL_FRAGMENT_SHADER;
+        default:
+            return 0;
+        }
+    }
 
 };
 

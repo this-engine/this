@@ -76,4 +76,18 @@ class TVec3 : public glm::vec3, TArchive
 
 };
 
+/**
+ *  TColor
+ *  @brief color in linear RGBA
+ *  @todo  hsl / rgb / hdr conversions
+ */
+class TColor : public glm::vec4, TArchive
+{
+public:
+    inline float r() {return x;}
+    inline float g() {return y;}
+    inline float b() {return z;}
+    inline float a() {return w;}
+};
+
 #endif // _this_core_
