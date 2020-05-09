@@ -9,11 +9,12 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 // this includes
 #include "gl_renderer.hpp"
 #include "gl_window.hpp"
-
+#include "gl_shader.hpp"
 
 
 static const struct
@@ -27,7 +28,7 @@ static const struct
     {   0.f,  0.6f, 0.f, 0.f, 1.f }
 };
  
-static const char* vertex_shader_text =
+static TGLShader vertex_shader_text = TGLShader(
 "#version 110\n"
 "uniform mat4 MVP;\n"
 "attribute vec3 vCol;\n"
@@ -37,18 +38,18 @@ static const char* vertex_shader_text =
 "{\n"
 "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
 "    color = vCol;\n"
-"}\n";
+"}\n" , TGLShaderType::Vertex);
  
-static const char* fragment_shader_text =
+static TGLShader fragment_shader_text = TGLShader(
 "#version 110\n"
 "varying vec3 color;\n"
 "void main()\n"
 "{\n"
 "    gl_FragColor = vec4(color, 1.0);\n"
-"}\n";
+"}\n", TGLShaderType::Fragment);
  
 
-static GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+static GLuint vertex_buffer, program;
 static GLint mvp_location, vpos_location, vcol_location;
 
 
@@ -74,19 +75,12 @@ void TGLRenderer::init()
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
  
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
- 
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
- 
-    program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
- 
+    program = TGLShader::loadShaders(vertex_shader_text, fragment_shader_text);
+
+    // TODO : implement error stop
+    if(program == 0)
+        return;
+
     mvp_location = glGetUniformLocation(program, "MVP");
     vpos_location = glGetAttribLocation(program, "vPos");
     vcol_location = glGetAttribLocation(program, "vCol");
@@ -104,27 +98,25 @@ void TGLRenderer::init()
 
 void TGLRenderer::renderFrame()
 {
+        int width, height;
+        glm::mat4x4 m, p, mvp;
+ 
+        glfwGetFramebufferSize(TargetWindow, &width, &height);
+ 
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT);
+        //glClearColor( 0.5f,0.2f, 0.3f,1.f);
+ 
+        m = glm::mat4x4(1.f);
+        glm::rotate(m, (float)glfwGetTime(), glm::vec3(0,1,0));
 
-    //if(!TargetWindow)
-    //    return;
-
-    TRenderer::renderFrame();
-    float ratio;
-    int width, height;
-    glm::mat4 m(1.0f), p, mvp;
+        //p = glm::perspective(60.0f, (float)width / (float)height, 0.1f, 100.0f);
+        p = glm::ortho(0.0f, (float)width,(float)height,0.0f, 0.1f, 100.0f);
+        mvp = p*m;
  
-    glfwGetFramebufferSize(TargetWindow, &width, &height);
-    ratio = width / (float) height;
+        glUseProgram(program);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+        glDrawArrays(GL_TRIANGLES, 0, 3);
  
-    glViewport(0, 0, width, height);
-    glClearColor(0.f,1.f,1.f,1.f);
-    //glClear(GL_COLOR_BUFFER_BIT);
- 
-    mvp = p* m;
- 
-    glUseProgram(program);
-    glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) glm::value_ptr(mvp));
-    glDrawArrays(GL_TRIANGLES, 0, 3);
- 
-    glfwSwapBuffers(TargetWindow);
+        glfwSwapBuffers(TargetWindow);
 }

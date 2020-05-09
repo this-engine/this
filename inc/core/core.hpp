@@ -53,12 +53,16 @@ private:
 
 public:
 
-    TString(char * chars) : store(chars) {}         /** TString @brief from char   */
-    TString(const char * chars) : store(chars)  {}  /** TString @brief from const char   */
-    TString(std::string string) : store(string) {}  /** TString @brief from string */
+    TString(char * chars) : store(chars) {}         /** TString @brief from char        */
+    TString(const char * chars) : store(chars)  {}  /** TString @brief from const char  */
+    TString(std::string string) : store(string) {}  /** TString @brief from string      */
 
-    operator std::string() {return store;}          /** TString @brief to string   */
-    operator const char*() {return store.c_str();}  /** TString @brief to char     */
+    operator std::string() {return store;}          /** TString @brief to string        */
+    operator const char*() {return store.c_str();}  /** TString @brief to char          */
+
+    size_t length() {return store.length();}        /** lenght @brief length of text        */
+    const char* c() {return store.c_str();}         /** c      @brief text as C char array  */
+
 
 };
 
