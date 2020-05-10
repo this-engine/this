@@ -59,14 +59,10 @@ public :
      */ 
     static void handleQuit(GLFWwindow * window);
     
-
-
     // window overrides
     virtual bool shouldClose()  override final;
     virtual void windowEvents() override final;
-
-    virtual void render() override final;
-
+    virtual void render() const override final;
 
     /** Constructor */
     TGLWindow(TString name, size_t x, size_t y);

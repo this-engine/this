@@ -3,16 +3,17 @@
 // For a copy, see <https://opensource.org/licenses/MIT>.
 
 // External libs
+#include <glm/gtx/transform.hpp>
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+
 // this includes
+#include "mesh.hpp"
 #include "gl_renderer.hpp"
 #include "gl_window.hpp"
 #include "gl_shader.hpp"
 #include "gl_program.hpp"
+#include "gl_types.hpp"
 
 static const struct
 {
@@ -65,8 +66,8 @@ void TGLRenderer::init()
         return;
 
     // init glad;
-
     gladLoadGL();
+
 
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
@@ -97,24 +98,66 @@ void TGLRenderer::init()
 void TGLRenderer::renderFrame()
 {
         int width, height;
-        glm::mat4x4 m, p, mvp;
+        TMat4 m, p, mvp;
  
         glfwGetFramebufferSize(TargetWindow, &width, &height);
  
         glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
-        //glClearColor( 0.5f,0.2f, 0.3f,1.f);
- 
-        m = glm::mat4x4(1.f);
-        glm::rotate(m, (float)glfwGetTime(), glm::vec3(0,1,0));
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //p = glm::perspective(60.0f, (float)width / (float)height, 0.1f, 100.0f);
-        p = glm::ortho(0.0f, (float)width,(float)height,0.0f, 0.1f, 100.0f);
+        glClearColor( 0.5f,0.2f, 0.3f,1.f);
+ 
+        m = TMat4::identity();
+        m.rotate(TVec3(0,1,0), (float)glfwGetTime());
+
+        p = TMat4::perspective(60.0f, (float)width ,(float)height, 0.1f, 1000.0f);
+
         mvp = p*m;
- 
-        glUseProgram(program);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-        glDrawArrays(GL_TRIANGLES, 0, 3);
- 
+
+        //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glDrawElements
         glfwSwapBuffers(TargetWindow);
+}
+
+
+
+void TGLRenderer::drawMesh(TGLRenderData &render_info, const TGLMesh &mesh, GLuint program_id)
+{
+    // computed at build time
+    constexpr size_t vertex_size = sizeof(TVertex);
+    constexpr size_t vec3_size = sizeof(TVec3);
+    constexpr size_t vec2_size = sizeof(TVec2);
+
+    glUseProgram(program_id);
+    glBindBuffer(GL_ARRAY_BUFFER,           mesh.vertexBuffer());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,   mesh.indexBuffer());
+    
+    // activate the shader access
+    glEnableVertexAttribArray(0); // coord
+    glEnableVertexAttribArray(1); // norm
+    glEnableVertexAttribArray(2); // uv
+    glEnableVertexAttribArray(3); // color
+
+    //glVertexAttribPointer(attribute (cf. shader), taille, type, mormalized, vertex size, offset)
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)0 );
+    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)(vec3_size) );
+    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)(vec3_size + vec3_size));
+    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)(vec3_size + vec3_size + vec2_size ));
+    
+    // uniforms for the shader
+    // TODO : make this dynamic
+    glUniformMatrix4fv(render_info.MVP_id,   1, GL_FALSE, render_info.MVP.value_ptr());
+    glUniformMatrix4fv(render_info.View_id,  1, GL_FALSE,  render_info.View.value_ptr());
+    glUniformMatrix4fv(render_info.Model_id, 1, GL_FALSE,  render_info.Model.value_ptr());
+    
+    // draw geometry
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+    //close the access
+    glDisableVertexAttribArray(3);
+    glDisableVertexAttribArray(2);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(0);
+    // not necessary to unbind.
 }

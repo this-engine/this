@@ -7,6 +7,7 @@
 
 #include <string>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 //#include <boost/archive/text_oarchive.hpp>
 //#include <boost/archive/text_iarchive.hpp>
@@ -71,23 +72,112 @@ public:
  *  TVec3
  *  @brief      3d vector type
  */
-class TVec3 : public glm::vec3, TArchive
+struct TVec3 : public glm::vec3, TArchive
 {
-
+    TVec3(float x, float y, float z) : glm::vec3( x, y, z) {}  /** TVec3 @brief coord constructor */
+    TVec3(glm::vec3 v) : glm::vec3(v) {}                       /** TVec3 @brief copy from glm constructor */
 };
+
+/**
+ *  TVec2
+ *  @brief      2d vector type
+ */
+struct TVec2 : public glm::vec2, TArchive
+{
+    inline float u() {return x;}
+    inline float v() {return y;}
+};
+
 
 /**
  *  TColor
  *  @brief color in linear RGBA
  *  @todo  hsl / rgb / hdr conversions
  */
-class TColor : public glm::vec4, TArchive
+struct TColor : public glm::vec4, TArchive
 {
-public:
     inline float r() {return x;}
     inline float g() {return y;}
     inline float b() {return z;}
     inline float a() {return w;}
+};
+
+/**
+ *  TMat4
+ *  @brief    4x4 matrix
+ */
+struct TMat4 : public glm::mat4x4, TArchive
+{
+
+    TMat4() = default;                                           /** TMat4 @brief default constructor */
+    TMat4(glm::mat4x4 glm_matrix) : glm::mat4x4(glm_matrix) {};  /** TMat4 @brief copy from glm constructor */
+
+    /**
+     *  value_ptr
+     *  @brief      get a pointer to pass to openGL/Vulkan/Whatever
+     */
+    float* value_ptr() {return glm::value_ptr<float>(*this);}
+
+    /**
+     *  Identity
+     *  @brief     construct an identity matrix
+     */
+    static inline TMat4 identity() {return TMat4(glm::mat4x4(1.f));}
+
+
+    /**
+     *  perspective
+     *  @brief     construct a perspective matrix
+     *  @param     fov      field of view , 60 is normal human vision
+     *  @param     width    width of your rendering surface
+     *  @param     height   height of your rendering surface
+     *  @param     near     front clipping plane
+     *  @param     far      distant clipping plane
+     */
+    static inline TMat4 perspective(float fov, float width, float height, float near, float far)
+    {
+        return TMat4(glm::perspective(fov, width /height, near, far));
+    }
+
+    /**
+     *  rotate
+     *  @brief     rotate matrix
+     *  @param     axis     axis of rotation
+     *  @param     angle    angle in degrees
+     */
+    void rotate(TVec3 axis, float deg_angle)
+    {
+        glm::rotate(*this, deg_angle, glm::vec3(axis));
+    }
+
+
+
+};
+
+/**
+ *  TMat4
+ *  @brief    4x4 matrix
+ */
+struct TRenderMatrices : public TArchive
+{
+    /**
+     *  MVP
+     *  @brief    Model View Projection matrix
+     */
+    TMat4 MVP;
+
+    /**
+     *  Model
+     *  @brief    Model matrix
+     */
+    TMat4 Model;
+
+
+    /**
+     *  View
+     *  @brief    View matrix
+     */
+    TMat4 View;
 };
 
 #endif // _this_core_

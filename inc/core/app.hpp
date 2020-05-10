@@ -6,7 +6,7 @@
 #ifndef _this_app_
 #define _this_app_
 
-
+#include <stdio.h>
 #include <cstdlib>  // for atexit
 #include <memory>
 #include "core.hpp"
@@ -137,20 +137,22 @@ void TApp<DERIVEDAPP>::end()
 template<typename DERIVEDAPP>
 void TApp<DERIVEDAPP>::main()
 {
-//#pragma omp parallel
+#pragma omp parallel shared(MainWindow)
     {
-        //#pragma omp single
+        #pragma omp master
         {
             while(!MainWindow->shouldClose())
             {
-                // must be run on main thread;
+                // must be run on "main thread";
                 MainWindow->windowEvents();
 
-                //#pragma omp taskgroup
+                #pragma omp taskgroup
                 {
-                    //#pragma omp task
+                    #pragma omp task shared(MainWindow)
                     { MainWindow->render(); }
                 }
+
+                //stderr << glGetError() << std::endl;
             }
         
         }

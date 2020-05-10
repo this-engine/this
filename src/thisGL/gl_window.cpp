@@ -43,8 +43,12 @@ void TGLWindow::windowEvents()
     glfwPollEvents();
 }
 
-void TGLWindow::render()
+void TGLWindow::render() const
 {
+    // check window is current context
+    if(glfwGetCurrentContext() != GlfwWindow.get())
+        glfwMakeContextCurrent(GlfwWindow.get());
+
     // start rendering
     if(Renderer)
         Renderer->renderFrame();
@@ -72,14 +76,11 @@ TGLWindow::TGLWindow(TString name, size_t x, size_t y) : TWindow(name, x,y), Glf
     }
     // making GL context
     glfwMakeContextCurrent(GlfwWindow.get());
+    Renderer.reset( new TGLRenderer(this));
     glfwSwapInterval(1);
  
     // enable window callbacks :
     glfwSetWindowCloseCallback(GlfwWindow.get(), TGLWindow::handleQuit);
-
-    Renderer.reset( new TGLRenderer(this));
-
-
 }
 
 TGLWindow::~TGLWindow()

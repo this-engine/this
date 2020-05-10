@@ -22,6 +22,9 @@ find_package(OpenMP)
 add_subdirectory(lib/glad)
 #glfw
 find_package(glfw3 3.3 REQUIRED)
+# glm
+find_package(glm REQUIRED)
+
 
 
 ##
@@ -39,22 +42,26 @@ endif()
 target_include_directories(core PUBLIC inc/core)
 
 ##
+## geometry :
+##
+
+file(GLOB GEOMETRY_SRC CONFIGURE_DEPENDS src/geometry/*.cpp)
+message( ${GEOMETRY_SRC} )
+add_library(geometry ${GEOMETRY_SRC})
+target_link_libraries(geometry PUBLIC core)
+target_include_directories(geometry PUBLIC inc/geometry)
+
+##
 ## thisGL :
 ##
 
 file(GLOB THISGL_SRC CONFIGURE_DEPENDS src/thisGL/*.cpp)
 message( ${THISGL_SRC} )
 add_library(thisGL ${THISGL_SRC})
-target_link_libraries(thisGL PUBLIC glad)
-
-# OPenMP
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(thisGL PUBLIC OpenMP::OpenMP_CXX)
-endif()
-
-target_link_libraries(thisGL PUBLIC glfw)
 target_link_libraries(thisGL PUBLIC core)
 target_link_libraries(thisGL PUBLIC glad)
+target_link_libraries(thisGL PUBLIC glfw)
+target_link_libraries(thisGL PUBLIC geometry)
 target_include_directories(thisGL PRIVATE inc/thisGL)
 
 ##
@@ -63,4 +70,5 @@ target_include_directories(thisGL PRIVATE inc/thisGL)
 add_executable(this-demo src/main.cpp)
 target_include_directories(this-demo PUBLIC inc)
 target_link_libraries(this-demo core)
+target_link_libraries(this-demo geometry)
 target_link_libraries(this-demo thisGL)
