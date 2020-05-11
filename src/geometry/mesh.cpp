@@ -7,5 +7,5 @@
 
 TMesh::TMesh(std::initializer_list<TVertex> vertices, std::initializer_list<TTriIndices> indices) : Vertices(vertices), Indices(indices)
 {
-
+    
 }

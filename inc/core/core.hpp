@@ -6,6 +6,7 @@
 #define _this_core_
 
 #include <string>
+#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -73,9 +74,22 @@ public:
  *  @brief      3d vector type
  */
 struct TVec3 : public glm::vec3, TArchive
-{
-    TVec3(float x, float y, float z) : glm::vec3( x, y, z) {}  /** TVec3 @brief coord constructor */
-    TVec3(glm::vec3 v) : glm::vec3(v) {}                       /** TVec3 @brief copy from glm constructor */
+{    
+    TVec3() : glm::vec3(0.f) {}               
+    TVec3(float x, float y, float z) : glm::vec3( x, y, z) {}          /** TVec3 @brief coord constructor */
+    TVec3(glm::vec3 v) : glm::vec3(v) {}                               /** TVec3 @brief copy from glm constructor */
+
+    /** 
+      * TVec3 
+      * @brief init list constructor 
+      */
+    TVec3(std::initializer_list<float> coords)
+    {
+        std::vector<float> v = coords;
+        x = coords.size() >= 0 ? v[0] : 0.f; 
+        y = coords.size() >= 1 ? v[1] : 0.f; 
+        z = coords.size() >= 2 ? v[2] : 0.f; 
+    }   
 };
 
 /**
@@ -84,22 +98,21 @@ struct TVec3 : public glm::vec3, TArchive
  */
 struct TVec2 : public glm::vec2, TArchive
 {
+    TVec2() :glm::vec2(0) {}
+
     inline float u() {return x;}
     inline float v() {return y;}
-};
 
-
-/**
- *  TColor
- *  @brief color in linear RGBA
- *  @todo  hsl / rgb / hdr conversions
- */
-struct TColor : public glm::vec4, TArchive
-{
-    inline float r() {return x;}
-    inline float g() {return y;}
-    inline float b() {return z;}
-    inline float a() {return w;}
+    /** 
+      * TVec2 
+      * @brief init list constructor 
+      */
+    TVec2(std::initializer_list<float> coords)
+    {
+        std::vector<float> v = coords;
+        x = coords.size() >= 0 ? v[0] : 0.f; 
+        y = coords.size() >= 1 ? v[1] : 0.f; 
+    }   
 };
 
 /**

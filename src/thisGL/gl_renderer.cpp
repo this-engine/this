@@ -13,7 +13,6 @@
 #include "gl_window.hpp"
 #include "gl_shader.hpp"
 #include "gl_program.hpp"
-#include "gl_types.hpp"
 
 static const struct
 {

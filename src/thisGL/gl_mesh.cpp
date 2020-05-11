@@ -5,7 +5,7 @@
 #include "mesh.hpp"
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
-#include "gl_types.hpp"
+#include "gl_mesh.hpp"
 
 
 TGLMesh::TGLMesh()

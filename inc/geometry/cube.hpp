@@ -14,7 +14,7 @@
  */
 class TCube : public TMesh
 {
-
+    TCube(float width = 1.0f, float height = 1.0f, float depth = 1.0f, TColor color = TColor::SlateBlue);
 
 };
 

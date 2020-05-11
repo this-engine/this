@@ -59,32 +59,4 @@ private:
 
 };
 	
-
-/**
- *  TGLRenderData
- *  @brief      struct holding strictly necessary render info
- */
-struct TGLRenderData : public TRenderMatrices
-{
-
-    /**
-     *  MVP_id
-     *  @brief      id of the Model-View-Projection matrix (stored in @see TRenderMatrices)
-     */
-    GLuint MVP_id;
-
-    /**
-     *  View_id
-     *  @brief      id of the View matrix (stored in @see TRenderMatrices)
-     */
-    GLuint View_id;
-
-    /**
-     *  Model_id
-     *  @brief      id of the Model matrix (stored in @see TRenderMatrices)
-     */
-    GLuint Model_id;
-
-};
-
 #endif //_this_gl_mesh_

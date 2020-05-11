@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "core.hpp"
-
+#include "color.hpp"
 /**
  *  TVertex
  *  @brief      3d vertex for meshes
@@ -15,10 +15,13 @@
  */
 struct TVertex : public TArchive
 {
-    TVec3   coord;  /** coord @brief 3D coordinates     */ 
-    TVec3   norml;  /** norml @brief vertex's normal    */
-    TVec2   uvcrd;  /** uvcrd @brief vertex's uv coord  */  
-    TColor  color;  /** color @brief linear RGB color   */
+    TVec3   Coord;  /** coord @brief 3D coordinates     */ 
+    TVec3   Norml;  /** norml @brief vertex's normal    */
+    TVec2   UVcrd;  /** uvcrd @brief vertex's uv coord  */  
+    TColor  Color;  /** color @brief linear RGB color   */
+
+    TVertex(TVec3 coord, TVec3   norml, TVec2   uvcrd, TColor  color)
+    : Coord(coord), Norml(norml), UVcrd(uvcrd), Color(color){}
 };
 
 /**
@@ -26,11 +29,7 @@ struct TVertex : public TArchive
  *  @brief      indices for making a 
  *  @see        TMesh
  */
-struct TTriIndices : public TArchive
-{
-    size_t indices[3];
-};
-
+typedef struct TTriIndices { size_t idx[3]; } TTriIndices;
 
 /**
  *  TMesh
@@ -39,10 +38,15 @@ struct TTriIndices : public TArchive
  */
 struct TMesh
 {
+    /**
+     *  TMesh()
+     *  @brief     Empty constructor, leaves everything empty
+     */
+    TMesh() {}
 
     /**
-     *  Vertices
-     *  @brief     all the vertices from that mesh and their relevant info
+     *  TMesh()
+     *  @brief     construct from vertices and indices 
      */
     TMesh(std::initializer_list<TVertex> vertices, std::initializer_list<TTriIndices> indices);
 
