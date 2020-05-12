@@ -48,42 +48,66 @@
 **
 ****************************************************************************/
 
-#include <QGuiApplication>
-#include <QSurfaceFormat>
-#include <QOpenGLContext>
+#ifndef GLWIDGET_H
+#define GLWIDGET_H
 
-#include "glwindow.h"
+#include <QOpenGLWindow>
+#include <QMatrix4x4>
+#include <QVector3D>
+#include "logo.h"
 
-// This example demonstrates easy, cross-platform usage of OpenGL ES 3.0 functions via
-// QOpenGLExtraFunctions in an application that works identically on desktop platforms
-// with OpenGL 3.3 and mobile/embedded devices with OpenGL ES 3.0.
+QT_BEGIN_NAMESPACE
 
-// The code is always the same, with the exception of two places: (1) the OpenGL context
-// creation has to have a sufficiently high version number for the features that are in
-// use, and (2) the shader code's version directive is different.
+class QOpenGLTexture;
+class QOpenGLShaderProgram;
+class QOpenGLBuffer;
+class QOpenGLVertexArrayObject;
 
-int main(int argc, char *argv[])
+QT_END_NAMESPACE
+
+class GLWindow : public QOpenGLWindow
 {
-    QGuiApplication app(argc, argv);
+    Q_OBJECT
+    Q_PROPERTY(float z READ z WRITE setZ)
+    Q_PROPERTY(float r READ r WRITE setR)
+    Q_PROPERTY(float r2 READ r2 WRITE setR2)
 
-    QSurfaceFormat fmt;
-    fmt.setDepthBufferSize(24);
+public:
+    GLWindow();
+    ~GLWindow();
 
-    // Request OpenGL 3.3 core or OpenGL ES 3.0.
-    if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL) {
-        qDebug("Requesting 3.3 core context");
-        fmt.setVersion(3, 3);
-        fmt.setProfile(QSurfaceFormat::CoreProfile);
-    } else {
-        qDebug("Requesting 3.0 context");
-        fmt.setVersion(3, 0);
-    }
+    void initializeGL();
+    void resizeGL(int w, int h);
+    void paintGL();
 
-    QSurfaceFormat::setDefaultFormat(fmt);
+    float z() const { return m_eye.z(); }
+    void setZ(float v);
 
-    GLWindow glWindow;
-    glWindow.showMaximized();
+    float r() const { return m_r; }
+    void setR(float v);
+    float r2() const { return m_r2; }
+    void setR2(float v);
+private slots:
+    void startSecondStage();
+private:
+    QOpenGLTexture *m_texture;
+    QOpenGLShaderProgram *m_program;
+    QOpenGLBuffer *m_vbo;
+    QOpenGLVertexArrayObject *m_vao;
+    Logo m_logo;
+    int m_projMatrixLoc;
+    int m_camMatrixLoc;
+    int m_worldMatrixLoc;
+    int m_myMatrixLoc;
+    int m_lightPosLoc;
+    QMatrix4x4 m_proj;
+    QMatrix4x4 m_world;
+    QVector3D m_eye;
+    QVector3D m_target;
+    bool m_uniformsDirty;
+    float m_r;
+    float m_r2;
+};
 
-    return app.exec();
-}
+#endif
 

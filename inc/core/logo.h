@@ -48,42 +48,28 @@
 **
 ****************************************************************************/
 
-#include <QGuiApplication>
-#include <QSurfaceFormat>
-#include <QOpenGLContext>
+#ifndef LOGO_H
+#define LOGO_H
 
-#include "glwindow.h"
+#include <qopengl.h>
+#include <QVector>
+#include <QVector3D>
 
-// This example demonstrates easy, cross-platform usage of OpenGL ES 3.0 functions via
-// QOpenGLExtraFunctions in an application that works identically on desktop platforms
-// with OpenGL 3.3 and mobile/embedded devices with OpenGL ES 3.0.
-
-// The code is always the same, with the exception of two places: (1) the OpenGL context
-// creation has to have a sufficiently high version number for the features that are in
-// use, and (2) the shader code's version directive is different.
-
-int main(int argc, char *argv[])
+class Logo
 {
-    QGuiApplication app(argc, argv);
+public:
+    Logo();
+    const GLfloat *constData() const { return m_data.constData(); }
+    int count() const { return m_count; }
+    int vertexCount() const { return m_count / 6; }
 
-    QSurfaceFormat fmt;
-    fmt.setDepthBufferSize(24);
+private:
+    void quad(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4);
+    void extrude(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
+    void add(const QVector3D &v, const QVector3D &n);
 
-    // Request OpenGL 3.3 core or OpenGL ES 3.0.
-    if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL) {
-        qDebug("Requesting 3.3 core context");
-        fmt.setVersion(3, 3);
-        fmt.setProfile(QSurfaceFormat::CoreProfile);
-    } else {
-        qDebug("Requesting 3.0 context");
-        fmt.setVersion(3, 0);
-    }
+    QVector<GLfloat> m_data;
+    int m_count;
+};
 
-    QSurfaceFormat::setDefaultFormat(fmt);
-
-    GLWindow glWindow;
-    glWindow.showMaximized();
-
-    return app.exec();
-}
-
+#endif // LOGO_H

@@ -76,7 +76,8 @@
             "complex": "cpp",
             "typeindex": "cpp",
             "valarray": "cpp",
-            "*.ipp": "cpp"
+            "*.ipp": "cpp",
+            "qsurfaceformat": "cpp"
         }
 	}
 }
