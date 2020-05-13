@@ -2,8 +2,8 @@
 // This work is licensed under the terms of the MIT license. 
 // For a copy, see <https://opensource.org/licenses/MIT>.
 
-#ifndef _this_glfw_window_
-#define _this_glfw_window_
+#ifndef _this_gl_window_
+#define _this_gl_window_
 
 
 #include "window.hpp"
@@ -59,14 +59,10 @@ public :
      */ 
     static void handleQuit(GLFWwindow * window);
     
-
-
     // window overrides
     virtual bool shouldClose()  override final;
     virtual void windowEvents() override final;
-
-    virtual void render() override final;
-
+    virtual void render() const override final;
 
     /** Constructor */
     TGLWindow(TString name, size_t x, size_t y);
@@ -77,4 +73,4 @@ public :
 };
 
 
-#endif // _this_glfw_window_
+#endif // _this_gl_window_

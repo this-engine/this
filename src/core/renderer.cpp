@@ -18,5 +18,4 @@ TRenderer::TRenderer(TWindow *window)
 
 void TRenderer::renderFrame()
 {
-    RenderThreadIsRunning = true;
 }

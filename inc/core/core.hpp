@@ -6,7 +6,9 @@
 #define _this_core_
 
 #include <string>
+#include <vector>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 //#include <boost/archive/text_oarchive.hpp>
 //#include <boost/archive/text_iarchive.hpp>
@@ -53,12 +55,16 @@ private:
 
 public:
 
-    TString(char * chars) : store(chars) {}         /** TString @brief from char   */
-    TString(const char * chars) : store(chars)  {}  /** TString @brief from const char   */
-    TString(std::string string) : store(string) {}  /** TString @brief from string */
+    TString(char * chars) : store(chars) {}         /** TString @brief from char        */
+    TString(const char * chars) : store(chars)  {}  /** TString @brief from const char  */
+    TString(std::string string) : store(string) {}  /** TString @brief from string      */
 
-    operator std::string() {return store;}          /** TString @brief to string   */
-    operator const char*() {return store.c_str();}  /** TString @brief to char     */
+    operator std::string() {return store;}          /** TString @brief to string        */
+    operator const char*() {return store.c_str();}  /** TString @brief to char          */
+
+    size_t length() {return store.length();}        /** lenght @brief length of text        */
+    const char* c() {return store.c_str();}         /** c      @brief text as C char array  */
+
 
 };
 
@@ -67,9 +73,124 @@ public:
  *  TVec3
  *  @brief      3d vector type
  */
-class TVec3 : public glm::vec3, TArchive
+struct TVec3 : public glm::vec3, TArchive
+{    
+    TVec3() : glm::vec3(0.f) {}               
+    TVec3(float x, float y, float z) : glm::vec3( x, y, z) {}          /** TVec3 @brief coord constructor */
+    TVec3(glm::vec3 v) : glm::vec3(v) {}                               /** TVec3 @brief copy from glm constructor */
+
+    /** 
+      * TVec3 
+      * @brief init list constructor 
+      */
+    TVec3(std::initializer_list<float> coords)
+    {
+        std::vector<float> v = coords;
+        x = coords.size() >= 0 ? v[0] : 0.f; 
+        y = coords.size() >= 1 ? v[1] : 0.f; 
+        z = coords.size() >= 2 ? v[2] : 0.f; 
+    }   
+};
+
+/**
+ *  TVec2
+ *  @brief      2d vector type
+ */
+struct TVec2 : public glm::vec2, TArchive
+{
+    TVec2() :glm::vec2(0) {}
+
+    inline float u() {return x;}
+    inline float v() {return y;}
+
+    /** 
+      * TVec2 
+      * @brief init list constructor 
+      */
+    TVec2(std::initializer_list<float> coords)
+    {
+        std::vector<float> v = coords;
+        x = coords.size() >= 0 ? v[0] : 0.f; 
+        y = coords.size() >= 1 ? v[1] : 0.f; 
+    }   
+};
+
+/**
+ *  TMat4
+ *  @brief    4x4 matrix
+ */
+struct TMat4 : public glm::mat4x4, TArchive
 {
 
+    TMat4() = default;                                           /** TMat4 @brief default constructor */
+    TMat4(glm::mat4x4 glm_matrix) : glm::mat4x4(glm_matrix) {};  /** TMat4 @brief copy from glm constructor */
+
+    /**
+     *  value_ptr
+     *  @brief      get a pointer to pass to openGL/Vulkan/Whatever
+     */
+    float* value_ptr() {return glm::value_ptr<float>(*this);}
+
+    /**
+     *  Identity
+     *  @brief     construct an identity matrix
+     */
+    static inline TMat4 identity() {return TMat4(glm::mat4x4(1.f));}
+
+
+    /**
+     *  perspective
+     *  @brief     construct a perspective matrix
+     *  @param     fov      field of view , 60 is normal human vision
+     *  @param     width    width of your rendering surface
+     *  @param     height   height of your rendering surface
+     *  @param     near     front clipping plane
+     *  @param     far      distant clipping plane
+     */
+    static inline TMat4 perspective(float fov, float width, float height, float near, float far)
+    {
+        return TMat4(glm::perspective(fov, width /height, near, far));
+    }
+
+    /**
+     *  rotate
+     *  @brief     rotate matrix
+     *  @param     axis     axis of rotation
+     *  @param     angle    angle in degrees
+     */
+    void rotate(TVec3 axis, float deg_angle)
+    {
+        glm::rotate(*this, deg_angle, glm::vec3(axis));
+    }
+
+
+
+};
+
+/**
+ *  TMat4
+ *  @brief    4x4 matrix
+ */
+struct TRenderMatrices : public TArchive
+{
+    /**
+     *  MVP
+     *  @brief    Model View Projection matrix
+     */
+    TMat4 MVP;
+
+    /**
+     *  Model
+     *  @brief    Model matrix
+     */
+    TMat4 Model;
+
+
+    /**
+     *  View
+     *  @brief    View matrix
+     */
+    TMat4 View;
 };
 
 #endif // _this_core_

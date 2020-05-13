@@ -61,7 +61,7 @@ public:
      *  render 
      *  @brief      render the content of the window
      */ 
-    virtual void render() {}
+    virtual void render() const{}
 
     /** 
      *  init 
