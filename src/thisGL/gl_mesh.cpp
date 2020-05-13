@@ -8,9 +8,17 @@
 #include "gl_mesh.hpp"
 
 
+
+
 TGLMesh::TGLMesh()
 {
     glGenBuffers(2, ElementBuffers);
+}
+
+TGLMesh::TGLMesh(const TMesh& mesh)
+{
+    glGenBuffers(2, ElementBuffers);
+    storeToBuffers(mesh);
 }
 
 void TGLMesh::storeToBuffers(const TMesh &mesh)

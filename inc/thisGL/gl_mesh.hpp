@@ -21,13 +21,17 @@ struct TGLMesh
 {
 public:
 
+
     TGLMesh();
+
+
+    TGLMesh(const TMesh& mesh);
 
     /**
      *  storeToBuffers()
      *  @brief     generate a valid buffer with 
      */
-    void storeToBuffers(const TMesh &mesh);
+    void storeToBuffers(const TMesh& mesh);
 
 
     /**

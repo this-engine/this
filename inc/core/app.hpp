@@ -9,9 +9,11 @@
 #include <stdio.h>
 #include <cstdlib>  // for atexit
 #include <memory>
+#include <omp.h>
 #include "core.hpp"
 #include "window.hpp"
-#include <omp.h>
+#include "asset_manager.hpp"
+
 
 
 
@@ -22,7 +24,7 @@
  *  @note       we use the CRTP paradigm to allow users of the engine to extend the behaviour of the app
  *  @see        <https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern>
  */
-template<typename DERIVEDAPP>
+template<typename DERIVEDAPP,typename WindowType, typename AssetManagerType>
 class TApp
 {
 private :
@@ -34,14 +36,14 @@ private :
      *  delete_singleton
      *  @brief       Function that manages the destruction of the instance at the end of the execution.
      */
-    static void delete_singleton() { delete app; }
+    static void delete_singleton() { delete App; }
 
     /**
      *  app
      *  @brief      this app
      *  @note       only living instance
      */
-	static DERIVEDAPP* app;
+	static DERIVEDAPP* App;
 
 protected:
 
@@ -50,14 +52,22 @@ protected:
      *  @brief      human readable name for this app
      *  @todo       repalce by a more compact and unique type(hash table ?)
      */
-    TString appName = TString("default-This-App");
+    TString AppName = TString("default-This-App");
 
     /**
      *  TApp
      *  @brief      ctor
      *  @note       protected to allow inheritance
      */
-    TApp() {}
+    TApp(TString app_name) : AppName(app_name) 
+    {
+        static_assert(std::is_base_of<TWindow, WindowType>::value,             "WindowType must be derived from TWindow");
+        static_assert(std::is_base_of<TAssetManager, AssetManagerType>::value, "AssetManagerType must be derived from TAssetManager");
+        auto window = new WindowType(AppName, 640, 480);
+        MainWindow.reset(window);
+        auto asset_manager = new AssetManagerType();
+        AssetManager.reset(asset_manager);
+    }
 
     /**
      *  ~TApp
@@ -94,8 +104,14 @@ public:
      *  MainWindow
      *  @brief      window to draw to
      */
-    std::unique_ptr<TWindow> MainWindow;
+    std::unique_ptr<WindowType> MainWindow;
 
+
+    /**
+     *  MainWindow
+     *  @brief      window to draw to
+     */
+    std::unique_ptr<AssetManagerType> AssetManager;
 
 public :
 
@@ -106,36 +122,36 @@ public :
      */
     static DERIVEDAPP&  appInstance()
     {
-        if(!app)
+        if(!App)
         {
-            app = new DERIVEDAPP;
+            App = new DERIVEDAPP;
             std::atexit( delete_singleton ); //Destruction of instance registered at runtime exit (No leak).
         }
-        return static_cast<DERIVEDAPP&>( *app );
+        return static_cast<DERIVEDAPP&>( *App );
     }
 
 
 };
 
-template<typename DERIVEDAPP>
-DERIVEDAPP* TApp<DERIVEDAPP>::app = nullptr;
+template<typename DERIVEDAPP,typename WindowType, typename AssetManagerType>
+DERIVEDAPP* TApp<DERIVEDAPP,WindowType,AssetManagerType >::App = nullptr;
 
 
-template<typename DERIVEDAPP>
-void TApp<DERIVEDAPP>::begin()
+template<typename DERIVEDAPP,typename WindowType, typename AssetManagerType>
+void TApp<DERIVEDAPP,WindowType,AssetManagerType >::begin()
 {
     if(MainWindow)
         MainWindow->init();
 }
 
-template<typename DERIVEDAPP>
-void TApp<DERIVEDAPP>::end()
+template<typename DERIVEDAPP,typename WindowType, typename AssetManagerType>
+void TApp<DERIVEDAPP,WindowType,AssetManagerType >::end()
 {
 
 }
 
-template<typename DERIVEDAPP>
-void TApp<DERIVEDAPP>::main()
+template<typename DERIVEDAPP,typename WindowType, typename AssetManagerType>
+void TApp<DERIVEDAPP,WindowType,AssetManagerType >::main()
 {
 #pragma omp parallel shared(MainWindow)
     {

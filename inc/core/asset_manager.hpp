@@ -5,7 +5,7 @@
 #ifndef _this_asset_manager_
 #define _this_asset_manager_
 
-#endif //_this_asset_manager_
+
 
 
 /**
@@ -17,3 +17,5 @@ class TAssetManager
 
 
 };
+
+#endif //_this_asset_manager_
