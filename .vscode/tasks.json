@@ -4,6 +4,7 @@
 		{
 			"label": "generate",
 			"type": "shell",
+			"dependsOn" : ["mkdir"],
 			"options": {
 				"cwd": "${workspaceRoot}/bin"
 			},
@@ -27,6 +28,16 @@
             "label": "clean",
             "type": "shell",
             "command": "rm -Rf bin/*",
+            "problemMatcher": []
+		}
+		,
+        {
+            "label": "mkdir",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceRoot}",
+			},
+            "command": "mkdir bin || true",
             "problemMatcher": []
 		}
 	]

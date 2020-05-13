@@ -11,6 +11,7 @@ project (this)
 
 ## Compilation flags
 add_definitions("-Wall" "-g")
+set(POSITION_INDEPENDENT_CODE TRUE)
 
 ##
 ## libraries :
