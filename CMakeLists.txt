@@ -33,7 +33,7 @@ set(HW_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 ## Core :
 ##
 file(GLOB CORE_SRC CONFIGURE_DEPENDS src/core/*.cpp)
-file(GLOB CORE_INC CONFIGURE_DEPENDS inc/core/*.h)
+file(GLOB CORE_INC CONFIGURE_DEPENDS inc/core/*.hpp)
 qt5_wrap_cpp(CORE_MOC_SRC ${CORE_INC})
 message( ${CORE_SRC} )
 add_library(core ${CORE_SRC} ${CORE_MOC_SRC})
@@ -44,11 +44,25 @@ set(HW_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/inc/core)
 target_link_libraries(core Qt5::Core)
 target_link_libraries(core Qt5::Gui)
 target_link_libraries(core Qt5::Widgets)
-target_link_libraries(core Qt5::OpenGL)
+#target_link_libraries(core Qt5::OpenGL)
 include_directories(${HW_HEADER_DIR})
 
-#target_include_directories(core PUBLIC inc/core)
-
+##
+## Game :
+##
+file(GLOB GAME_SRC CONFIGURE_DEPENDS src/game/*.cpp)
+file(GLOB GAME_INC CONFIGURE_DEPENDS inc/game/*.hpp)
+qt5_wrap_cpp(GAME_MOC_SRC ${GAME_INC})
+message( ${GAME_SRC} )
+add_library(game ${GAME_SRC} ${GAME_MOC_SRC})
+set(HW_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/inc/game)
+#set(HW_GUI_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/gui)
+target_link_libraries(game PUBLIC core)
+#target_link_libraries(core Qt5::Core)
+#target_link_libraries(core Qt5::Gui)
+#target_link_libraries(core Qt5::Widgets)
+#target_link_libraries(core Qt5::OpenGL)
+include_directories(${HW_HEADER_DIR})
 
 ##
 ## Demo :
@@ -56,5 +70,4 @@ include_directories(${HW_HEADER_DIR})
 add_executable(this-demo src/main.cpp)
 target_include_directories(this-demo PUBLIC inc)
 target_link_libraries(this-demo core)
-target_link_libraries(this-demo Qt5::Core)
-target_link_libraries(this-demo Qt5::Gui)
+target_link_libraries(this-demo game)

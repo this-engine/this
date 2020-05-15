@@ -17,7 +17,7 @@
 				"cwd": "${workspaceRoot}/bin"
             },
             "dependsOn" : ["generate"],
-			"command": "make -j8",
+			"command": "make -j",
 			"problemMatcher": {
 				"base": "$gcc",
 				"fileLocation": ["absolute"]
