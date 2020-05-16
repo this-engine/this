@@ -5,7 +5,12 @@
 #ifndef _THIS_GAME_APP_
 #define _THIS_GAME_APP_
 
-#include "app.hpp"
+// Qt includes
+#include <QGuiApplication>
+
+// forward declarations
+class TAssetManager;
+
 
 /*!
  * \class TGameApp
@@ -13,12 +18,19 @@
  * \see TApp
  * \since 0.1-Qt
  */
-class TGameApp : public TApp
+class TGameApp : public QGuiApplication
 {
+    Q_OBJECT
+
 public:
 
-    TGameApp(int &argc, char **argv) : TApp(argc, argv){}
+    TGameApp(int &argc, char **argv);
 
+    ~TGameApp();
+
+private:
+
+    TAssetManager * AssetManager;
     
 };
 

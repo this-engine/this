@@ -78,7 +78,9 @@
             "valarray": "cpp",
             "*.ipp": "cpp",
             "qsurfaceformat": "cpp",
-            "qobject": "cpp"
+            "qobject": "cpp",
+            "qwindow": "cpp",
+            "qtcore": "cpp"
         }
 	}
 }

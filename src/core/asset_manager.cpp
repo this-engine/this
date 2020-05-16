@@ -22,7 +22,7 @@ QSharedPointer<TAsset> TAssetManager::loadAsset(const QFile* const file )
     {
         return QSharedPointer<TAsset> (nullptr);
     }
-
+    // 
     auto new_asset = new TAsset((QObject *)this);
 
     // add this asset to the list 

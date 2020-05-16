@@ -6,8 +6,7 @@
 #define _THIS_APP_
 
 // Qt includes
-#include <QGuiApplication>
-
+#include <QApplication>
 
 // forward declaration
 class TAssetManager;
@@ -17,9 +16,9 @@ class TAssetManager;
  * \brief Base app for all this applications
  * \since 0.1-Qt
  */
-class TApp : public QGuiApplication
+class TApp : public QApplication
 {
-    //Q_OBJECT
+    Q_OBJECT
 
 public:
     TApp(int &argc, char **argv, int = ApplicationFlags);

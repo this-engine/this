@@ -7,7 +7,7 @@
 #include <QSurfaceFormat>
 #include <QOpenGLContext>
 
-TApp::TApp(int &argc, char **argv, int appflag) : QGuiApplication(argc,argv , appflag)
+TApp::TApp(int &argc, char **argv, int appflag) : QApplication(argc,argv , appflag)
 {
     AssetManager = new TAssetManager(this);
 }
