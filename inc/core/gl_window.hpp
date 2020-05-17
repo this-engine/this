@@ -5,6 +5,10 @@
 #ifndef _THIS_GL_WINDOW_
 #define _THIS_GL_WINDOW_
 
+// this includes
+//#include "visual.hpp"
+
+
 // Qt includes
 #include <QOpenGLWindow>
 
@@ -12,7 +16,7 @@
 
 // this forward declaration
 class TCamera;
-class TNode;
+class TVisual;
 
 /*!
  * \class TGLWindow
@@ -43,7 +47,7 @@ protected:
     // A camera to do rendering
     TCamera * Camera;
 
-    TNode * RootNode;
+    QList<TVisual*> RenderObjects;
 
 private:
 

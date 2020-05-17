@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     TApp app(argc, argv);
 
-    QFileDialog::getExistingDirectory(nullptr, QString("dossier ressource ?"));
+    //QFileDialog::getOpenFileUrl(nullptr, QString("mesh"));
 
     TGLWindow glWindow;
     glWindow.showMaximized();

@@ -9,6 +9,11 @@ TCamera::TCamera(QObject* parent) : QObject(parent)
     
 }
 
+TCamera::~TCamera()
+{
+
+}
+
 void TCamera::setLocation(QVector3D value)
 {
     Eye = value;

@@ -6,9 +6,9 @@
 #define _THIS_VISUAL_
 
 // Qt includes
-#include <QObject> 
+#include <QObject>
+#include <QSharedPointer> 
 #include <QVector>
-#include "uniform.hpp"
 
 // Qt forward declaration
 QT_BEGIN_NAMESPACE
@@ -36,17 +36,20 @@ public:
 
     TVisual(QObject * parent =nullptr);
 
-    void Draw();
+    ~TVisual();
+
+    virtual void Draw();
+
+    virtual void Init();
 
 protected:
 
-    TShader* Shaders;
+    QSharedPointer<TShader> Shader;
 
-    QList<TUniform> Uniforms;
-
-    QOpenGLBuffer* vbo;
 
     QOpenGLVertexArrayObject* vao;
+
+    QOpenGLBuffer* vbo;
 
 
 };

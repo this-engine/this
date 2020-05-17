@@ -6,8 +6,9 @@
 #define _THIS_CAMERA_
 
 // Qt includes
-#include <QByteArray> //TODO: is the minimal include ?
+#include <QList>
 #include "asset.hpp"
+#include "uniform.hpp"
 
 // Qt forward declaration
 QT_BEGIN_NAMESPACE
@@ -23,27 +24,29 @@ QT_END_NAMESPACE
  * 
  * \since 0.1-Qt
  */
-class TShader : public TAsset
+class TShader: public QObject
 {
+    Q_OBJECT
+
 public:
 
-    TShader();
+    TShader(const QString& vertex, const QString& fragment);
+
+    ~TShader();
+
+    const QOpenGLShaderProgram* getProgram() const;
+
+    void linkProgram() const;
+
+    void bindProgram() const;
 
 protected:
 
+    void setProgramLocations(TUniform::TypesEnum type, QString custom_name);
+
     QOpenGLShaderProgram* program;
 
-public:
-
-   /*!
-    * \fn static QByteArray TShader::versionedShaderCode(const char *src)
-    * 
-    * Appends the version of the the OpenGL to use with the shader
-    * 
-    * \note  could be left alone in the cpp
-    * \since 0.1-Qt
-    */
-    static QByteArray versionedShaderCode(const char *src);
+    QList<TUniform*> Uniforms;
 
 };
 

@@ -30,6 +30,9 @@ public:
 
     TCamera(QObject* parent = nullptr);
 
+
+    ~TCamera();
+
     QMatrix4x4 getLookAtMatrix() const
     {
         QMatrix4x4 cam;
@@ -80,9 +83,6 @@ protected:
     QPoint Resolution;
 
     QMatrix4x4 Projection;
-
-    // May need to move this elsewhere
-    QMatrix4x4 World;
     
     QVector3D Eye;
     
