@@ -36,7 +36,6 @@ void TVisual::Init()
         vao->bind();
 
 
-
     if(Shader)
         Shader->bindProgram();
 
@@ -44,7 +43,9 @@ void TVisual::Init()
     vbo->bind();
 
     // vbo->allocate(m_logo.constData(), m_logo.count() * sizeof(GLfloat));
-    
+        int glAttribVertexPosition;
+    int glAttribVertexColor;
+    int glAttribVertexNormal;
     glfunc->glEnableVertexAttribArray(0);
     glfunc->glEnableVertexAttribArray(1);
     glfunc->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);

@@ -79,11 +79,11 @@ TShader::TShader(const QString& vertex, const QString& fragment) : program(new Q
     program->addShaderFromSourceCode(QOpenGLShader::Fragment, versionedShaderCode(fragment.toStdString().c_str()));
     // get ready
 
-    //m_projMatrixLoc = m_program->uniformLocation("projMatrix");
-    //m_camMatrixLoc = m_program->uniformLocation("camMatrix");
-    //m_worldMatrixLoc = m_program->uniformLocation("worldMatrix");
-    //m_myMatrixLoc = m_program->uniformLocation("myMatrix");
-    //m_lightPosLoc = m_program->uniformLocation("lightPos");
+    TUniform * unif;
+    foreach(unif, Uniforms)
+    {
+       unif->setUniformLocation(program);
+    }
 }
 
 TShader::~TShader()
@@ -117,11 +117,4 @@ void TShader::bindProgram() const
 const QOpenGLShaderProgram* TShader::getProgram() const
 {
     return program;
-}
-
-
-
-void TShader::setProgramLocations(TUniform::TypesEnum type, QString custom_name)
-{
-
 }

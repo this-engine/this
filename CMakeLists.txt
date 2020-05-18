@@ -61,7 +61,7 @@ include_directories(${GAME_HEADER_DIR})
 ##
 ## Demo :
 ##
-add_executable(this-demo src/main.cpp)
+add_executable(this-demo src/demo/main.cpp)
 target_include_directories(this-demo PUBLIC inc)
 target_link_libraries(this-demo core)
 target_link_libraries(this-demo game)

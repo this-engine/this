@@ -52,6 +52,12 @@ protected:
     QOpenGLBuffer* vbo;
 
 
+private :
+
+    int glAttribVertexPosition;
+    int glAttribVertexColor;
+    int glAttribVertexNormal;
+
 };
 
 #endif // _THIS_VISUAL_

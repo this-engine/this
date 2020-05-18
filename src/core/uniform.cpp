@@ -3,7 +3,7 @@
 // For a copy, see <https://opensource.org/licenses/MIT>.
 
 #include "uniform.hpp"
-
+#include <QOpenGLShaderProgram>
 
 const QMap<const char *,QMetaType::Type> TUniform::TypeConversionMap = 
 {
@@ -14,15 +14,11 @@ const QMap<const char *,QMetaType::Type> TUniform::TypeConversionMap =
     {"mat4" , QMetaType::QMatrix4x4 }
 };
 
-const QMap<const char *, TUniform::TypesEnum> TUniform::PropertiesGLSLNames =
+
+void TUniform::setUniformLocation(QOpenGLShaderProgram * program)
 {
-    {"LightPos"   , LightVec3        },
-    {"CamMatrix"  , CameraMat4x4     },
-    {"WorldMatrix", WorldMat4x4      },
-    {"ProjMatrix" , ProjectionMat4x4 },
-    {""           , CustomFloat      },
-    {""           , CustomVec2       },
-    {""           , CustomVec3       },
-    {""           , CustomVec4       },
-    {""           , CustomMat4x4     }
-};
+    if(program)
+    {
+        GLUniformPointer = program->uniformLocation(PropertyName);
+    }
+}
