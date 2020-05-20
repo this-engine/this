@@ -38,7 +38,7 @@ public:
 
     ~TVisual();
 
-    virtual void Draw();
+    virtual void draw();
 
     virtual void Init();
 
@@ -46,11 +46,9 @@ protected:
 
     QSharedPointer<TShader> Shader;
 
-
     QOpenGLVertexArrayObject* vao;
 
     QOpenGLBuffer* vbo;
-
 
 private :
 

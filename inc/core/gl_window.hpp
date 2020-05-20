@@ -42,6 +42,9 @@ public slots:
     // something changed we need to update the view
     void updateGL();
 
+    // add a object to render
+    void SetVisual(QList<TVisual*> render_objects);
+
 protected:
 
     // A camera to do rendering

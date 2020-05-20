@@ -46,6 +46,20 @@ target_link_libraries(core Qt5::Widgets)
 include_directories(${CORE_HEADER_DIR})
 
 ##
+## Extra :
+##
+file(GLOB EXTRA_SRC CONFIGURE_DEPENDS src/extra/*.cpp)
+file(GLOB EXTRA_INC CONFIGURE_DEPENDS inc/extra/*.hpp)
+qt5_wrap_cpp(EXTRA_MOC_SRC ${EXTRA_INC})
+message( ${EXTRA_SRC} )
+add_library(extra ${EXTRA_SRC} ${EXTRA_MOC_SRC})
+set(EXTRA_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/inc/extra)
+target_link_libraries(extra Qt5::Core)
+target_link_libraries(extra Qt5::Gui)
+target_link_libraries(extra core)
+include_directories(${EXTRA_HEADER_DIR})
+
+##
 ## Game :
 ##
 file(GLOB GAME_SRC CONFIGURE_DEPENDS src/game/*.cpp)

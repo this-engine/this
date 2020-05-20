@@ -53,7 +53,7 @@ void TVisual::Init()
     vbo->release();
 }
 
-void TVisual::Draw()
+void TVisual::draw()
 {
 
 }

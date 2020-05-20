@@ -80,7 +80,10 @@
             "qsurfaceformat": "cpp",
             "qobject": "cpp",
             "qwindow": "cpp",
-            "qtcore": "cpp"
+            "qtcore": "cpp",
+            "qbytearray": "cpp",
+            "qt": "cpp",
+            "qvector": "cpp"
         }
 	}
 }

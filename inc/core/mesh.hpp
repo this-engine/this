@@ -5,21 +5,25 @@
 #ifndef _THIS_MESH_
 #define _THIS_MESH_
 
-// this includes
 #include "visual.hpp"
+
+
+QT_BEGIN_NAMESPACE
+class QFile;
+QT_END_NAMESPACE
+
 
 /*!
  * \class TMesh
- * \brief 3D mesh class
- * 
- * Stores the necessary shader, uniforms and buffers
- *
- * \note by default it is drawn instanced
+ * \brief 3D mesh Data class
  * \since 0.1-Qt
  */
 class TMesh : public TVisual
 {
-    
+public: 
+
+
+private:
 
 };
 

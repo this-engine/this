@@ -91,6 +91,12 @@ void TGLWindow::updateGL()
     
 }
 
+void TGLWindow::SetVisual(QList<TVisual*> render_objects)
+{
+    RenderObjects = render_objects;
+    // maybe invalidate the scene...
+}
+
 void TGLWindow::paintGL()
 {
     
@@ -101,6 +107,13 @@ void TGLWindow::paintGL()
     f->glClearColor(0, 0, 0, 1);
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // draw all visual object straight in one pass
+    TVisual * draw_object;
+    foreach(draw_object, RenderObjects)
+    {
+        if(draw_object)
+            draw_object->draw();
+    }
 
     // Now call a function introduced in OpenGL 3.1 / OpenGL ES 3.0. We
     // requested a 3.3 or ES 3.0 context, so we know this will work.
