@@ -7,6 +7,7 @@
 
 
 #include <QVector> 
+#include <QMatrix4x4>
 #include <QList>
 
 // Qt forward declaration
@@ -46,6 +47,7 @@ public:
  * \class TGLTFNodeData
  * \brief container for GLTF scene 
  * \since 0.1-Qt
+ * \todo  Add support to create _this_ nodes from it
  */
 class TGLTFNodeData
 {
@@ -54,6 +56,7 @@ public:
     TGLTFNodeData(QString& name,QList<int>& meshes) : Name(name),MeshIndices(meshes){}
     QString Name;
     QList<int> MeshIndices;
+    QMatrix4x4 Transform; // contains scale, rotation and translation
 };
 
 
