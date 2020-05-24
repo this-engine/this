@@ -16,7 +16,7 @@
 TGLTFAssetData parseAsset( const QJsonObject &json)
 {
     if(!json.contains(QString("asset")))
-        return TGLTFAssetData(QString(), QString());
+        return TGLTFAssetData();
 
     QJsonValue asset_value = json.value(QString("asset"));
     QJsonObject asset_item = asset_value.toObject();
@@ -58,101 +58,241 @@ QList<TGLTFSceneData> parseScene( const QJsonObject &json)
                         scene_obj["name"].toString() :
                         QString("default_scene");
 
-        QJsonArray indices_array = item["nodes"].toArray();
-        QList<int> indices;
 
-        QJsonValue index;
-        foreach(index, indices_array)
+        QList<int> indices;
+        if(scene_obj.contains(QString("nodes")))
         {
+            QJsonArray indices_array = scene_obj["nodes"].toArray();
+            QJsonValue index;
+            foreach(index, indices_array)
+            {
             indices.push_back(index.toInt());
+            }
         }
-        retval.push_back(TGLT(name,indices));
+       
+        retval.push_back(TGLTFSceneData(name,indices));
     }
 
     //if(num != retval.size())
     //{
     //    ; // TODO: implement error handling 
     //}
-
     return retval;
 }
 
 
 QList<TGLTFNodeData> parseNodes( const QJsonObject &json)
 {
+    if (!json.contains(QString("nodes")))
+        return QList<TGLTFNodeData>();
+
+    QList<TGLTFNodeData> retval;
+
     QJsonValue nodes_value = json.value(QString("nodes"));
     QJsonArray nodes = nodes_value.toArray();
     QJsonValue node;
+
     foreach(node, nodes)
     {
-        QMatrix4x4 transform;
+        // node data
+        TGLTFNodeData node_data;
+       
+
+
         auto node_info = node.toObject();
         if(node_info.contains(QString("matrix")))
         {
             auto matrix_values = node_info["matrix"].toArray();
             if(matrix_values.count() == 16)
             {
-                transform = QMatrix4x4( matrix_values[00].toDouble(), matrix_values[01].toDouble(), matrix_values[02].toDouble(), matrix_values[03].toDouble(),
-                                        matrix_values[04].toDouble(), matrix_values[05].toDouble(), matrix_values[06].toDouble(), matrix_values[07].toDouble(),
-                                        matrix_values[08].toDouble(), matrix_values[09].toDouble(), matrix_values[10].toDouble(), matrix_values[11].toDouble(),
-                                        matrix_values[12].toDouble(), matrix_values[13].toDouble(), matrix_values[14].toDouble(), matrix_values[15].toDouble() );
+                node_data.Transform = QMatrix4x4( matrix_values[ 0].toDouble(), matrix_values[ 1].toDouble(), matrix_values[ 2].toDouble(), matrix_values[ 3].toDouble(),
+                                                  matrix_values[ 4].toDouble(), matrix_values[ 5].toDouble(), matrix_values[ 6].toDouble(), matrix_values[ 7].toDouble(),
+                                                  matrix_values[ 8].toDouble(), matrix_values[ 9].toDouble(), matrix_values[10].toDouble(), matrix_values[11].toDouble(),
+                                                  matrix_values[12].toDouble(), matrix_values[13].toDouble(), matrix_values[14].toDouble(), matrix_values[15].toDouble() );
             }
         }
         else
         {
-            transform.setToIdentity();
+             node_data.Transform.setToIdentity();
             // T * R * S
             // order might be wrong
             if(node_info.contains(QString("scale")))
             {
                 auto sc_values = node_info["scale"].toArray();
-                if(sc_values.count >= 3)
+                if(sc_values.count() >= 3)
                 {
                     auto scale = QVector3D(sc_values[0].toDouble(), sc_values[1].toDouble(), sc_values[2].toDouble());
-                    transform.scale(scale);
+                     node_data.Transform.scale(scale);
                 }
             }
             if(node_info.contains(QString("rotation")))
             {
                 auto rot_values = node_info["rotation"].toArray();
-                if(rot_values.count >= 4)
+                if(rot_values.count() >= 4)
                 {
                     auto rotate = QQuaternion(rot_values[0].toDouble(), rot_values[1].toDouble(), rot_values[2].toDouble(), rot_values[3].toDouble());
-                    transform.rotate(rotate);
+                     node_data.Transform.rotate(rotate);
                 }
             }
             if(node_info.contains(QString("translation")))
             {
                 auto trans_values = node_info["translation"].toArray();
-                if(trans_values.count >= 3)
+                if(trans_values.count() >= 3)
                 {
                     auto translate = QVector3D(trans_values[0].toDouble(), trans_values[1].toDouble(), trans_values[2].toDouble());
-                    transform.translate(translate);
+                     node_data.Transform.translate(translate);
                 }
             }
 
-        }
-        if(node_info.contains(QString))
-        QJsonArray mesh_ids_array = node_info["meshes"].toArray();
-        QList<int> mesh_ids;
-        QJsonValue idx;
-        foreach(idx, mesh_ids_array)
-        {
-            mesh_ids.push_back(idx.toInt());
+
         }
 
-        QJsonArray mesh_ids_array = node_info["meshes"].toArray();
-        QList<int> mesh_ids;
-        QJsonValue idx;
-        foreach(idx, mesh_ids_array)
+        // Meshes indices
+        if(node_info.contains(QString("meshes")))
         {
-            mesh_ids.push_back(idx.toInt());
+            QJsonArray mesh_ids_array = node_info["meshes"].toArray();
+            QJsonValue idx;
+            foreach(idx, mesh_ids_array)
+            {
+                node_data.MeshIndices.push_back(idx.toInt());
+            }
         }
 
-        
+        if(node_info.contains(QString("camera")))
+        {
+            QJsonArray mesh_ids_array = node_info["camera"].toArray();
+            QJsonValue idx;
+            foreach(idx, mesh_ids_array)
+            {
+                node_data.CameraIndices.push_back(idx.toInt());
+            }
+        } 
+
+        retval.push_back(node_data);    
     }
-    QList<TGLTFNodeData> retval;
+
     return retval;
+}
+
+
+QList<TGLTFMeshData> parseMeshes(const QJsonObject &json)
+{
+    QList<TGLTFMeshData> retval;
+
+    if(!json.contains(QString("meshes"))) // || json.contains(QString("buffer")))
+        return retval;
+        
+    QJsonValue meshes_value = json.value(QString("meshes"));
+    QJsonArray meshes = meshes_value.toArray();
+
+    //
+    // first we try to get buffers bufferviews and accessors
+    //
+    // first buffers :
+    if(!json.contains(QString("buffers")))
+        return retval;
+    // we have at least one buffer
+    QVector<QByteArray> Buffers;
+    {
+        auto buffers_array = json.value(QString("accessors")).toArray();
+        QJsonValue buffer_value;
+        foreach(buffer_value, buffers_array)
+        {
+            auto buffer_obj = buffer_value.toObject();
+            auto URI = buffer_obj.value(QString("uri")).toString();
+
+            if(URI.startsWith("data:", Qt::CaseInsensitive))
+            {
+                // we have a buffer written there, something like :
+                /*
+                    "uri" : "data:application/gltf-buffer;base64,AAAIAAcAAAABAAgAAQAJAAgAAQACAAkAAgAKAAkAAgADAAoAAwALAAoAAwAEAAsABAAMAAsABAAFAAwABQANAAwABQAGAA0AAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAQAAAAAAAAAAAAABAQAAAAAAAAAAAAACAQAAAAAAAAAAAAACgQAAAAAAAAAAAAADAQAAAAAAAAAAAAAAAAAAAgD8AAAAAAACAPwAAgD8AAAAAAAAAQAAAgD8AAAAAAABAQAAAgD8AAAAAAACAQAAAgD8AAAAAAACgQAAAgD8AAAAAAADAQAAAgD8AAAAACAAKAAwAAAAAAIA/AAAAQAAAAAAAAEBAAABAQAAAAAAAAKBAAACAQAAAAAA=",
+                */
+            }
+            else
+            {
+                // we need to read a separate file:   
+                QFile data_file(URI);
+                if (!data_file.open(QIODevice::ReadOnly)) continue;
+                QByteArray blob = data_file.readAll();
+                data_file.close();
+                Buffers.push_back(blob);
+            }
+            
+        }
+    }
+
+
+    // lastly accessors :  
+    QVector<QVariantList> buffers_data;
+    QVariant t;
+    t.type();
+    // accessors
+    if(!json.contains(QString("accessors")))
+        return retval;
+
+    // we have at least one accessor
+    {
+        auto accessors_array = json.value(QString("accessors")).toArray();
+                    QJsonValue accessor_value;
+                    foreach(accessor_value,accessors_array )
+                    {
+                        auto accessor_object = accessor_value.toObject();
+                        if( ! accessor_object.contains(QString("bufferView")) ||
+                            ! accessor_object.contains(QString("type")) ||
+                            ! accessor_object.contains(QString("componentType")))
+                            continue;
+
+                        if(accessor_object["type"].toString() == QString("SCALAR"))
+                        {
+                            
+                        }
+                        
+                    }
+    }
+
+
+
+    QJsonValue mesh;
+    foreach(mesh, meshes)
+    {
+        TGLTFMeshData mesh_data; 
+        auto mesh_info = mesh.toObject(); 
+        // mesh has no inner value else than "primitives" 
+        
+        mesh_data.MeshName = mesh_info.contains(QString("name")) ? mesh_info.value(QString("name")).toString() : QString("unnamed_mesh");
+
+        if(mesh_info.contains(QString("primitives")))
+        {
+            auto primitives = mesh_info["primitives"].toObject();
+            QJsonValue primitive;
+            foreach(primitive,primitives)
+            {
+                // different attributes stored in different accessors
+                int pos      ;
+                int norm     ;
+                int texcoord0;
+
+                // let's get the attributes
+                auto primitive_obj = primitive.toObject();
+                if(primitive_obj.contains(QString("attributes")))
+                {
+                    pos       = primitive_obj.value(QString("POSITION")).toInt(-1);
+                    norm      = primitive_obj.value(QString("NORMAL")).toInt(-1);
+                    texcoord0 = primitive_obj.value(QString("TEXCOORD_0")).toInt(-1);
+                }
+
+
+
+            }
+        }
+
+        retval.push_back(mesh_data);
+    }
+
+
+    return retval;
+
+
 }
 
 

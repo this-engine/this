@@ -40,22 +40,9 @@ public:
 
     virtual void draw();
 
-    virtual void Init();
+    virtual void init();
 
 protected:
-
-    QSharedPointer<TShader> Shader;
-
-    QOpenGLVertexArrayObject* vao;
-
-    QOpenGLBuffer* vbo;
-
-private :
-
-    int glAttribVertexPosition;
-    int glAttribVertexColor;
-    int glAttribVertexNormal;
-
 };
 
 #endif // _THIS_VISUAL_

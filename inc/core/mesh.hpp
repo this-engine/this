@@ -12,6 +12,26 @@ QT_BEGIN_NAMESPACE
 class QFile;
 QT_END_NAMESPACE
 
+/*!
+ * \namespace   TAttributes
+ * \brief       different possible buffer attribute
+ * \since       0.1-Qt
+ */
+namespace TAttributes
+{   
+    Q_NAMESPACE
+
+    enum types 
+    { 
+        position,
+        normal,
+        uv,
+        color
+    };
+    Q_ENUM_NS(types)
+}
+
+
 
 /*!
  * \class TMesh
@@ -22,8 +42,29 @@ class TMesh : public TVisual
 {
 public: 
 
+    TMesh(QObject * parent =nullptr);
 
-private:
+    ~TMesh();
+
+    virtual void draw() override;
+
+    virtual void init() override;
+
+
+protected:
+
+    QSharedPointer<TShader> Shader;
+
+    QOpenGLVertexArrayObject* vao;
+
+    QOpenGLBuffer* vbo;
+
+private :
+
+    int glAttribVertexPosition;
+    int glAttribVertexColor;
+    int glAttribVertexNormal;
+
 
 };
 

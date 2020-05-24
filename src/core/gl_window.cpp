@@ -58,7 +58,7 @@ void TGLWindow::initializeGL()
         if(visual)
         {
             std::cout << visual->objectName().constData() << std::endl;
-            visual->Init();
+            visual->init();
         }
     }
     

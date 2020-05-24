@@ -24,6 +24,7 @@ QT_END_NAMESPACE
 class TGLTFAssetData
 {
 public:
+    TGLTFAssetData() {}
     TGLTFAssetData(QString& generator, QString &version) : Generator(generator),Version(version){}
     QString Generator;
     QString Version;
@@ -52,12 +53,32 @@ public:
 class TGLTFNodeData
 {
 public:
-
+    TGLTFNodeData() {}
     TGLTFNodeData(QString& name,QList<int>& meshes) : Name(name),MeshIndices(meshes){}
     QString Name;
     QList<int> MeshIndices;
+    QList<int> CameraIndices;
     QMatrix4x4 Transform; // contains scale, rotation and translation
 };
+
+/*!
+ * \class TGLTFNodeData
+ * \brief container for GLTF scene 
+ * \since 0.1-Qt
+ * \todo  Add support to create _this_ nodes from it
+ */
+class TGLTFMeshData
+{
+public:
+    
+    TGLTFMeshData() {}
+
+    QString MeshName;
+    int RenderMode;
+    QList<int> BufferIndices;
+};
+
+
 
 
 /*!
