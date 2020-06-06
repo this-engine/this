@@ -83,7 +83,8 @@
             "qtcore": "cpp",
             "qbytearray": "cpp",
             "qt": "cpp",
-            "qvector": "cpp"
+            "qvector": "cpp",
+            "qvector3d": "cpp"
         }
 	}
 }

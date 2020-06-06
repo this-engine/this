@@ -281,7 +281,7 @@ QList<TGLTFMeshData> parseMeshes(const QJsonObject &json)
                     texcoord0 = primitive_obj.value(QString("TEXCOORD_0")).toInt(-1);
                 }
 
-
+                
 
             }
         }
