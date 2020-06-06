@@ -84,7 +84,11 @@
             "qbytearray": "cpp",
             "qt": "cpp",
             "qvector": "cpp",
-            "qvector3d": "cpp"
+            "qvector3d": "cpp",
+            "compare": "cpp",
+            "concepts": "cpp",
+            "ranges": "cpp",
+            "stop_token": "cpp"
         }
 	}
 }

@@ -7,6 +7,21 @@
 #include <QVector3D>
 #include <QQuaternion>
 
+// std tuples
+#include <tuple>
+
+// enable hashing of tuples of ints
+namespace std
+{
+    inline uint qHash(const std::tuple<int, int, int>& key, uint seed = 0)
+    {
+        return ::qHashBits(&key, sizeof(int) * 3, seed);
+    }
+}
+// hashing include
+#include <QHash>
+
+
 TOBJImportData TOBJImporter::ImportFile(QFile* file)
 {
     TOBJImportData found_data;
@@ -27,19 +42,20 @@ TOBJImportData TOBJImporter::ImportFile(QFile* file)
     QVector<QStringRef> lines = content.splitRef(QRegExp("\n+"), Qt::SkipEmptyParts);
 
     // vertices indexes
-    QVector<unsigned int> vertex_indices;
-    QVector<unsigned int> uv_indices;
-    QVector<unsigned int> normal_indices;
-    QVector<unsigned int> vertex_count;
 
-    QVector<QVector3D> temp_vertices;
-    QVector<QVector2D> temp_uvs;
-    QVector<QVector3D> temp_normals;
+    QList<QVector3D> temp_pos;
+    QList<QVector2D> temp_uvs;
+    QList<QVector3D> temp_nor;
 
+    // final data
+    QList<TOBJVertex>   vertices;
+    QList<unsigned int> indices;
+
+    QHash<std::tuple<int, int, int>,unsigned int> faces_vertices_table;
     
     QStringRef line;
 
-    const QRegExp whitespace = QRegExp("\s+"); 
+    const QRegExp whitespace = QRegExp("\\s+"); 
 
     foreach(line, lines)
     {
@@ -69,7 +85,7 @@ TOBJImportData TOBJImporter::ImportFile(QFile* file)
             QVector3D v    = {  v_str_val[0].toFloat(),
                                 v_str_val[1].toFloat(),
                                 v_str_val[2].toFloat()};
-            temp_vertices.push_back(v);
+            temp_pos.push_back(v);
         } else
         if (line.startsWith("vt"))
         {
@@ -88,76 +104,50 @@ TOBJImportData TOBJImporter::ImportFile(QFile* file)
             QVector3D vn    = { vn_str_val[0].toFloat(),
                                 vn_str_val[1].toFloat(),
                                 vn_str_val[2].toFloat()};
-            temp_normals.push_back(vn);
+            temp_nor.push_back(vn);
         } else
         if (line.startsWith("f"))
         {
             int pos         = line.lastIndexOf("f");
             auto f_str      = line.right(pos).toString();
             auto f_str_val  = f_str.splitRef(whitespace);
-            int count = 0;
             QStringRef f_elem;
             foreach(f_elem, f_str_val)
             {
+                
                 auto idxs = f_elem.toString().splitRef(QRegExp("/"));
-                vertex_indices.push_back(idxs[0].toUInt());
-                uv_indices.push_back(idxs[1].toUInt());
-                normal_indices.push_back(idxs[2].toUInt());
-                count ++;
+            
+                bool p_ok;
+                auto p = idxs[0].toUInt(&p_ok);
+                bool n_ok;
+                auto n = idxs[1].toUInt(&n_ok);
+                bool v_ok;
+                auto v = idxs[2].toUInt(&v_ok);
+
+                std::tuple<int, int , int> value = {p_ok ?  p : 0, n_ok ?  n : 0, v_ok ?  v : 0};
+
+                auto it = faces_vertices_table.find(value);
+                unsigned int vertex_index = 0;
+                if (it == faces_vertices_table.end())
+                {
+                    QVector3D pos = p_ok ?  temp_pos[p] : QVector3D();
+                    QVector3D nor = n_ok ?  temp_nor[n] : QVector3D();
+                    QVector2D uv  = v_ok ?  temp_uvs[v] : QVector2D();
+
+                    vertex_index = faces_vertices_table.size();
+                    faces_vertices_table.insert(value, vertex_index);
+                    vertices.push_back(TOBJVertex(pos, nor, uv));
+                } 
+                else 
+                {
+                    vertex_index = it.value();
+                }
+
             }
-            vertex_count.push_back(count);
         }
     }
 
-    // end of text parsing. 
-    // let's fix vertices indexing
- 
-    // first let's make all faces
-
-    struct TOBJVertex_idx
-    {
-        unsigned int p_idx;
-        unsigned int n_idx;
-        unsigned int u_idx;
-
-        TOBJVertex_idx() = default;
-        TOBJVertex_idx(unsigned int p, unsigned int n, unsigned int u) : p_idx(p), n_idx(n), u_idx(u) {}
-
-        bool operator== (const TOBJVertex_idx& rhv) const {return rhv.p_idx == p_idx && rhv.n_idx == n_idx && rhv.u_idx == u_idx;}
-    };
-
-    QVector<TOBJVertex_idx> obj_faces_vertex;
-    QVector<unsigned int> indices;
-    // let's build the correct vertices indices
-    for(int f_idx = 0; f_idx < vertex_indices.length(); f_idx ++ )
-    {
-        // obj starts at 1 instead of 0
-        auto new_vertex =  TOBJVertex_idx (vertex_indices[f_idx] - 1, normal_indices[f_idx] - 1, uv_indices[f_idx] - 1 );
-        if (!obj_faces_vertex.contains(new_vertex))
-        {
-            obj_faces_vertex.push_back(new_vertex);
-            indices.push_back(obj_faces_vertex.length()-1); // add the index of the last added vertex
-        }
-        else
-        {
-            indices.push_back(obj_faces_vertex.indexOf(new_vertex)); // add the index of the vertex we encountered
-        }
-    }
-
-    // let's now regroup vertices according to indices
-    TOBJVertex_idx vert_idx;
-    QVector<TOBJVertex> vertices;
-    foreach(vert_idx, obj_faces_vertex)
-    {
-        auto new_vert =  TOBJVertex(
-                                    temp_vertices[vert_idx.p_idx],
-                                    temp_normals[vert_idx.n_idx],
-                                    temp_uvs[vert_idx.u_idx]
-                                    );
-        // add this vertices
-        vertices.push_back( new_vert );
-    }
-
+    // assigning to our return value
     found_data.Vertices = vertices;  
     found_data.Indices  = indices;
 

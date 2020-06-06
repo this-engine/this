@@ -42,8 +42,8 @@ struct TOBJVertex
  */
 struct TOBJImportData
 {
-    QVector<unsigned int>  Indices;
-    QVector<TOBJVertex>    Vertices;
+    QList<unsigned int>  Indices;
+    QList<TOBJVertex>    Vertices;
     QStringList Comments;
     QString MtlFile;
 };

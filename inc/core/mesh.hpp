@@ -51,6 +51,10 @@ public:
     virtual void init() override;
 
 
+    void addIndices(const QVector<unsigned int>& new_indices);
+
+    void AddVerticesBuffer(const QVector<QVector3D>& new_verts );
+
 protected:
 
     QSharedPointer<TShader> Shader;
