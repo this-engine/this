@@ -16,7 +16,8 @@
 
 TMesh::TMesh(QObject * parent) : TVisual(parent), vao(new QOpenGLVertexArrayObject), vbo(new QOpenGLBuffer)
 {
-
+    vertices_count = 0;
+    indices_count  = 0;
 }
 
 TMesh::~TMesh()
@@ -57,3 +58,21 @@ void TMesh::init()
     vbo->release();
 }   
  
+
+
+void TMesh::addIndices(const QVector<unsigned int>& new_indices)
+{
+
+}
+
+
+void TMesh::addVerticesBuffer3D(const QVector<QVector3D>& new_verts )
+{
+
+}
+
+
+void TMesh::addVerticesBuffer2D(const QVector<QVector2D>& new_verts )
+{
+
+}

@@ -53,7 +53,9 @@ public:
 
     void addIndices(const QVector<unsigned int>& new_indices);
 
-    void AddVerticesBuffer(const QVector<QVector3D>& new_verts );
+    void addVerticesBuffer3D(const QVector<QVector3D>& new_verts );
+
+    void addVerticesBuffer2D(const QVector<QVector2D>& new_verts );
 
 protected:
 
@@ -64,6 +66,9 @@ protected:
     QOpenGLBuffer* vbo;
 
 private :
+
+    int vertices_count;
+    int indices_count;
 
     int glAttribVertexPosition;
     int glAttribVertexColor;
