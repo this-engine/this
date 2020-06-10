@@ -19,20 +19,6 @@ class QFile;
 QT_END_NAMESPACE
 
 
-/*!
- * \class TOBJVertice
- * \brief container for OBJ extracted vertex
- * \since 0.1-Qt
- */
-struct TOBJVertex
-{
-    QVector3D Position;
-    QVector3D Normal;
-    QVector2D UV;
-
-    TOBJVertex() = default;
-    TOBJVertex(QVector3D position, QVector3D normal, QVector2D uv) : Position(position), Normal(normal), UV(uv) {}
-};
 
 /*!
  * \class TOBJImportData
@@ -42,10 +28,12 @@ struct TOBJVertex
  */
 struct TOBJImportData
 {
-    QList<unsigned int>  Indices;
-    QList<TOBJVertex>    Vertices;
-    QStringList Comments;
-    QString MtlFile;
+    QVector<unsigned int>   Indices;
+    QVector<QVector3D>      Position;
+    QVector<QVector3D>      Normal;
+    QVector<QVector2D>      UV;
+    QStringList             Comments;
+    QString                 MtlFile;
 };
 
 

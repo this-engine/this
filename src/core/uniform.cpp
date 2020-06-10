@@ -22,3 +22,9 @@ void TUniform::setUniformLocation(QOpenGLShaderProgram * program)
         GLUniformPointer = program->uniformLocation(PropertyName);
     }
 }
+
+
+void TUniform::setValue(QVariant value)
+{
+    
+}

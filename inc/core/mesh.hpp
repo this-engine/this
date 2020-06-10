@@ -51,19 +51,38 @@ public:
     virtual void init() override;
 
 
-    void addIndices(const QVector<unsigned int>& new_indices);
+    static void addVerticesBufferUInt(const QVector<unsigned int>& new_verts , QOpenGLBuffer* vertex_buffer);
+    static void addVerticesBuffer3D(  const QVector<QVector3D>& new_verts ,    QOpenGLBuffer* vertex_buffer);
+    static void addVerticesBuffer2D(  const QVector<QVector2D>& new_verts ,    QOpenGLBuffer* vertex_buffer);
 
-    void addVerticesBuffer3D(const QVector<QVector3D>& new_verts );
 
-    void addVerticesBuffer2D(const QVector<QVector2D>& new_verts );
+    inline void addIndices( const QVector<unsigned int>& new_indices) { addVerticesBufferUInt(new_indices,      VBOidx); }
+    inline void addPosAttr( const QVector<QVector3D>& new_vertpos   ) { addVerticesBuffer3D(new_vertpos,   VBOVPosAttr); }
+    inline void addNormAttr(const QVector<QVector3D>& new_vertnorm  ) { addVerticesBuffer3D(new_vertnorm,  VBONormAttr); }
+    inline void addUVAttr(  const QVector<QVector2D>& new_vertUV    ) { addVerticesBuffer2D(new_vertUV,    VBOTexCAttr); }
+
 
 protected:
 
     QSharedPointer<TShader> Shader;
 
-    QOpenGLVertexArrayObject* vao;
+    // Vertex Array Object
+    // data with different access patterns in different buffers
+    // Buffers which will be used together are grouped using VAO to minimise the total number of calls required to set up for each draw call.
+    QOpenGLVertexArrayObject* VAO;
 
-    QOpenGLBuffer* vbo;
+    // Vertex indices
+    QOpenGLBuffer* VBOidx;
+    // Vertex positions
+    QOpenGLBuffer* VBOVPosAttr;
+    // Vertex normals
+    QOpenGLBuffer* VBONormAttr;
+    // texture coordinates (ie. UVs)
+    QOpenGLBuffer* VBOTexCAttr;
+
+
+    virtual QList<QOpenGLBuffer*> getBuffers() const;
+
 
 private :
 
