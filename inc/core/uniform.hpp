@@ -16,6 +16,7 @@ class QOpenGLShaderProgram;
 QT_END_NAMESPACE
 
 
+
 /*!
  * \class TUniform
  * \brief class to handle a shader program uniform (auto update)
@@ -28,6 +29,7 @@ class TUniform : public QObject
 {
     Q_OBJECT
 public:
+
 
     static const QMap<const char*,QMetaType::Type> TypeConversionMap;
 
@@ -67,11 +69,8 @@ private:
 
     int GLUniformPointer;
 
-public:
+    QOpenGLShaderProgram * Program;
 
-
-    // for in-editor display :
-    //static QMap<ProgramProperties, QString> PropertiesFriendlyNames;
 
 };
 

@@ -40,7 +40,7 @@ public:
         return cam;
     }
 
-public slots:
+
 
     /*!
      *  \fn void TCamera::setLocation(QVector3D value);
@@ -66,6 +66,22 @@ public slots:
      *  \brief change FOV
      */
     void setFOV(float value);
+
+public slots:
+
+
+    /*!
+     *  \fn void TCamera::onResolutionXChanged();
+     *  \brief change the camera resolution (thus changing projection matrix)
+     */
+    void onResolutionXChanged(int arg);
+
+    /*!
+     *  \fn void TCamera::onResolutionYChanged();
+     *  \brief change the camera resolution (thus changing projection matrix)
+     */
+    void onResolutionYChanged(int arg);
+
 
 
 signals:

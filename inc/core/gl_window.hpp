@@ -29,13 +29,18 @@ class TGLWindow : public QOpenGLWindow
 
 public:
 
-    TGLWindow(QWindow * parent = nullptr);
+    TGLWindow();
     ~TGLWindow();
 
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
 
+signals:
+
+    void onGLcontextReady();
+
+    void onGLinitialized();
 
 public slots: 
 
@@ -43,14 +48,15 @@ public slots:
     void updateGL();
 
     // add a object to render
-    void SetVisual(QList<TVisual*> render_objects);
+    void setVisual(QList<TVisual*> render_objects);
 
 protected:
 
     // A camera to do rendering
     TCamera * Camera;
 
-    QList<TVisual*> RenderObjects;
+    // an unsorted dictionnary of what we need to draw
+    QHash<QString, TVisual* > RenderObjects;
 
 private:
 

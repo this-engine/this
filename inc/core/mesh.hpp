@@ -32,6 +32,8 @@ namespace TAttributes
 }
 
 
+class TShader;
+
 
 /*!
  * \class TMesh
@@ -50,21 +52,24 @@ public:
 
     virtual void init() override;
 
+    virtual void setShader(TShader *new_shader = nullptr);
 
     static void addVerticesBufferUInt(const QVector<unsigned int>& new_verts , QOpenGLBuffer* vertex_buffer);
     static void addVerticesBuffer3D(  const QVector<QVector3D>& new_verts ,    QOpenGLBuffer* vertex_buffer);
     static void addVerticesBuffer2D(  const QVector<QVector2D>& new_verts ,    QOpenGLBuffer* vertex_buffer);
 
 
-    inline void addIndices( const QVector<unsigned int>& new_indices) { addVerticesBufferUInt(new_indices,      VBOidx); }
-    inline void addPosAttr( const QVector<QVector3D>& new_vertpos   ) { addVerticesBuffer3D(new_vertpos,   VBOVPosAttr); }
-    inline void addNormAttr(const QVector<QVector3D>& new_vertnorm  ) { addVerticesBuffer3D(new_vertnorm,  VBONormAttr); }
-    inline void addUVAttr(  const QVector<QVector2D>& new_vertUV    ) { addVerticesBuffer2D(new_vertUV,    VBOTexCAttr); }
+    inline void addIndices( const QVector<unsigned int>& new_indices) { addVerticesBufferUInt(new_indices,      VBOidx); indices_count  = new_indices.count();  }
+    inline void addPosAttr( const QVector<QVector3D>& new_vertpos   ) { addVerticesBuffer3D(new_vertpos,   VBOVPosAttr); vertices_count = new_vertpos.count();  }
+    inline void addNormAttr(const QVector<QVector3D>& new_vertnorm  ) { addVerticesBuffer3D(new_vertnorm,  VBONormAttr); vertices_count = new_vertnorm.count(); }
+    inline void addUVAttr(  const QVector<QVector2D>& new_vertUV    ) { addVerticesBuffer2D(new_vertUV,    VBOTexCAttr); vertices_count = new_vertUV.count();   }
+
+    virtual TShader * getShader() const override { return Shader;}
 
 
 protected:
 
-    QSharedPointer<TShader> Shader;
+    TShader * Shader;
 
     // Vertex Array Object
     // data with different access patterns in different buffers
@@ -93,6 +98,8 @@ private :
     int glAttribVertexColor;
     int glAttribVertexNormal;
 
+
+    bool ValidShader;
 
 };
 

@@ -4,8 +4,10 @@
 
 // this includes
 #include "gl_window.hpp"
+#include "shader.hpp"
 #include "camera.hpp"
 #include "visual.hpp"
+
 
 // Qt includes
 #include <QOpenGLContext>
@@ -15,7 +17,7 @@
 // std includes
 #include <iostream>
 
-TGLWindow::TGLWindow(QWindow* parent) : QOpenGLWindow(NoPartialUpdate, parent)
+TGLWindow::TGLWindow() 
 {
     //
     //  init GL 
@@ -33,11 +35,20 @@ TGLWindow::TGLWindow(QWindow* parent) : QOpenGLWindow(NoPartialUpdate, parent)
     }
     QSurfaceFormat::setDefaultFormat(fmt);
 
+    makeCurrent();
+
+    emit onGLcontextReady();
+
     //
     // Init window specific
     // might need to move to GameWindow
     Camera = new TCamera(this);
+
     QObject::connect(Camera, &TCamera::cameraChanged, this, &TGLWindow::updateGL);
+
+    // resolution callback
+    QObject::connect(this, &TGLWindow::widthChanged,  Camera, &TCamera::onResolutionXChanged);
+    QObject::connect(this, &TGLWindow::heightChanged, Camera, &TCamera::onResolutionYChanged);
 }
 
 TGLWindow::~TGLWindow()
@@ -45,26 +56,34 @@ TGLWindow::~TGLWindow()
     makeCurrent();
     delete Camera;
 }
-
-   
+  
 
 void TGLWindow::initializeGL()
 {
+    QOpenGLWindow::initializeGL();
     QOpenGLFunctions *glfunc = QOpenGLContext::currentContext()->functions();
 
-    TVisual* visual;
-    foreach(visual, RenderObjects)
+    for (auto draw_object : RenderObjects.values())
     {
-        if(visual)
+        if(draw_object)
         {
-            std::cout << visual->objectName().constData() << std::endl;
-            visual->init();
+            draw_object->init();
+            auto shader = draw_object->getShader();
+            if (shader)
+            {
+                auto w = shader->findUniform("worldMatrix");
+                auto c = shader->findUniform("camMatrix");
+                auto p = shader->findUniform("projMatrix");
+                auto m = shader->findUniform("myMatrix");
+            }
         }
+            
     }
-    
+
     glfunc->glEnable(GL_DEPTH_TEST);
     glfunc->glEnable(GL_CULL_FACE);
 
+    emit onGLinitialized();
 }
 
 void TGLWindow::resizeGL(int w, int h)
@@ -91,10 +110,32 @@ void TGLWindow::updateGL()
     
 }
 
-void TGLWindow::SetVisual(QList<TVisual*> render_objects)
+void TGLWindow::setVisual(QList<TVisual*> render_objects)
 {
-    RenderObjects = render_objects;
-    // maybe invalidate the scene...
+    QList<TVisual*> new_items;
+
+    // find differences 
+    for (auto new_visual : render_objects)
+    {
+        auto itr = RenderObjects.find(new_visual->objectName());
+        if(itr == RenderObjects.end())
+        {
+            RenderObjects.insert(new_visual->objectName(), new_visual);
+            new_items.push_back(new_visual);
+        }
+            
+    }
+
+    // init those new objects
+    for(TVisual* visual : new_items)
+    {
+        if(visual)
+        {
+            qDebug() << "init render object" << visual->objectName();
+            visual->init();
+        }
+    }
+    
 }
 
 void TGLWindow::paintGL()
@@ -102,14 +143,17 @@ void TGLWindow::paintGL()
     
     // Now use QOpenGLExtraFunctions instead of QOpenGLFunctions as we want to
     // do more than what GL(ES) 2.0 offers.
-    QOpenGLExtraFunctions *f = QOpenGLContext::currentContext()->extraFunctions();
+    QOpenGLExtraFunctions *glfunc = QOpenGLContext::currentContext()->extraFunctions();
 
-    f->glClearColor(0, 0, 0, 1);
-    f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glfunc->glClearColor(0, 1, 0, 1);
+
+    glfunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glfunc->glEnable(GL_DEPTH_TEST);
+    glfunc->glEnable(GL_CULL_FACE);
 
     // draw all visual object straight in one pass
-    TVisual * draw_object;
-    foreach(draw_object, RenderObjects)
+    
+    for (auto draw_object : RenderObjects.values())
     {
         if(draw_object)
             draw_object->draw();

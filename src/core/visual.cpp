@@ -25,3 +25,8 @@ void TVisual::draw()
 {
 
 }
+
+TShader* TVisual::getShader() const
+{
+    return nullptr;
+}

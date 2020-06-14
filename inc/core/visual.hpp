@@ -18,8 +18,7 @@ class QOpenGLBuffer;
 class QOpenGLVertexArrayObject;
 QT_END_NAMESPACE
 
-// forward declarations
-class TShader;
+class  TShader;
 
 /*!
  * \class TVisual
@@ -42,7 +41,12 @@ public:
 
     virtual void init();
 
+    virtual TShader * getShader() const;
+
 protected:
+
+
+
 };
 
 #endif // _THIS_VISUAL_

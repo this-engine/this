@@ -19,12 +19,31 @@ void TUniform::setUniformLocation(QOpenGLShaderProgram * program)
 {
     if(program)
     {
+        Program = program;
         GLUniformPointer = program->uniformLocation(PropertyName);
     }
 }
 
-
 void TUniform::setValue(QVariant value)
 {
-    
+    if(Program)
+    {
+        switch (value.type())
+        {
+        case QMetaType::QVector2D   :
+            break;
+        case QMetaType::QVector4D   :
+            break;
+        case QMetaType::QMatrix4x4  :
+            //Program->setUniformValue(GLUniformPointer, value. );
+            break;
+        case QMetaType::QVector3D   :
+            break;
+
+        default:
+            break;
+        }
+
+        
+    }
 }

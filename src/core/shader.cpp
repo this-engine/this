@@ -17,7 +17,7 @@
  * 
  * Appends the version of the the OpenGL to use with the shader
  * 
- * \note  could be left alone in the cpp
+ * \note  is left alone in the cpp
  * \since 0.1-Qt
  */
 QByteArray versionedShaderCode(const char *src)
@@ -38,19 +38,18 @@ QByteArray versionedShaderCode(const char *src)
  * 
  * get all the uniform declarations from a source shader
  * 
- * \note  could be left alone in the cpp
+ * \note  is left alone in the cpp
  * \since 0.1-Qt
  */
-QList<TUniform*>  getUniformDeclarationsList(QObject * parent, const QString& src)
+QHash<QString, TUniform*>  getUniformDeclarationsList(QObject * parent, const QString& src)
 {
-    QList<TUniform*> uniformslist;
-    auto list = src.split(QRegExp("[\r\n\t; ]+"), QString::SkipEmptyParts);
-    QString line;
-    foreach (line, list)
+   QHash<QString, TUniform*> uniformslist;
+    auto list = src.split(QRegExp("[\r\n\t; ]+"), Qt::SkipEmptyParts);
+    for (auto line : list)
     {
         if(line.startsWith(QString("uniform")))
         {
-            auto words = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+            auto words = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
             for (int idx = 1/* 0 is uniform*/; idx< words.size(); idx++)
             {
                 const char* word= words[idx].toStdString().c_str();
@@ -59,7 +58,7 @@ QList<TUniform*>  getUniformDeclarationsList(QObject * parent, const QString& sr
                     auto type = TUniform::TypeConversionMap.find(word).value();
                     auto name =  words[idx+1];
                     auto uniform = new TUniform(parent, type,name);
-                    uniformslist.insert(uniformslist.end(),uniform);
+                    uniformslist.insert(name,uniform);
                     break;
                 }
             }
@@ -69,32 +68,28 @@ QList<TUniform*>  getUniformDeclarationsList(QObject * parent, const QString& sr
 
 }
 
-TShader::TShader(const QString& vertex, const QString& fragment) : program(new QOpenGLShaderProgram)
+TShader::TShader(const QString& vertex, const QString& fragment, QObject *parent) : QObject(parent) , Program(new QOpenGLShaderProgram)
 {
     // make uniform list a thing : 
-    Uniforms= getUniformDeclarationsList(this, vertex);
-    Uniforms.append(getUniformDeclarationsList(this, fragment));
+    Uniforms = getUniformDeclarationsList(this, vertex);
+    Uniforms.insert(getUniformDeclarationsList(this, fragment));
 
-    program->addShaderFromSourceCode(QOpenGLShader::Vertex, versionedShaderCode(vertex.toStdString().c_str()));
-    program->addShaderFromSourceCode(QOpenGLShader::Fragment, versionedShaderCode(fragment.toStdString().c_str()));
+    Program->addShaderFromSourceCode(QOpenGLShader::Vertex, versionedShaderCode(vertex.toStdString().c_str()));
+    Program->addShaderFromSourceCode(QOpenGLShader::Fragment, versionedShaderCode(fragment.toStdString().c_str()));
     // get ready
 
-    TUniform * unif;
-    foreach(unif, Uniforms)
+    for( auto unif: Uniforms.values())
     {
-       unif->setUniformLocation(program);
+       unif->setUniformLocation(Program);
     }
 }
 
 TShader::~TShader()
 {
-    delete program;
-    // better be safe than sorry
-    program = 0;
+    delete Program;
+    Program = 0;
 
-    // get read of our objects
-    TUniform * unif;
-    foreach(unif, Uniforms)
+    for( auto unif: Uniforms)
     {
         if(unif)
             delete unif;
@@ -104,17 +99,30 @@ TShader::~TShader()
 
 void TShader::linkProgram() const
 {
-    assert(program != nullptr);
-    program->link();
+    assert(Program != nullptr);
+    Program->link();
 }
 
 void TShader::bindProgram() const 
 {
-    assert(program != nullptr);
-    program->bind();
+    assert(Program != nullptr);
+    Program->bind();
+}
+
+void TShader::releaseProgram() const
+{
+    assert(Program != nullptr);
+    Program->release();
 }
 
 const QOpenGLShaderProgram* TShader::getProgram() const
 {
-    return program;
+    return Program;
+}
+
+
+TUniform* TShader::findUniform(QString name) const
+{
+    auto unif = Uniforms.find(name);    
+    return unif != Uniforms.end() ? unif.value() : nullptr;
 }

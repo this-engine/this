@@ -28,6 +28,7 @@ void TCamera::setLookAt(QVector3D value)
 
 void TCamera::setResolution(QPoint value)
 {
+    qDebug() << value;
     Resolution = value;
     Projection.setToIdentity();
     const auto aspect_ratio = Resolution.x() /(float)Resolution.y();
@@ -43,5 +44,17 @@ void TCamera::setFOV(float value)
     const auto vertical_angle = verticalAngle(FOV,aspect_ratio);
     Projection.perspective(vertical_angle, aspect_ratio, 0.01f, 100.0f);
     emit cameraChanged();
+}
+
+void TCamera::onResolutionXChanged(int arg)
+{
+    auto new_res = QPoint(arg,Resolution.y());
+    setResolution(new_res);
+}
+
+void TCamera::onResolutionYChanged(int arg)
+{
+    auto new_res = QPoint(Resolution.x(), arg);
+    setResolution(new_res);
 }
     

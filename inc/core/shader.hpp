@@ -2,8 +2,8 @@
 // This work is licensed under the terms of the MIT license. 
 // For a copy, see <https://opensource.org/licenses/MIT>.
 
-#ifndef _THIS_CAMERA_
-#define _THIS_CAMERA_
+#ifndef _THIS_SHADER_
+#define _THIS_SHADER_
 
 // Qt includes
 #include <QList>
@@ -15,7 +15,14 @@ QT_BEGIN_NAMESPACE
 class QOpenGLShaderProgram;
 QT_END_NAMESPACE
 
-namespace TCommonUniformNames
+
+/*!
+ * \enum TCommonUniformNames
+ * \brief list of uniform the this engine is supposed to recognize and assign automagically
+ *
+ * \since 0.1-Qt
+ */
+namespace TUniformNames
 {
     Q_NAMESPACE
 
@@ -33,7 +40,7 @@ namespace TCommonUniformNames
     };
     Q_ENUM_NS(types)
 
-    static const QMap<const char *, TCommonUniformNames::types> UniformGLSLNames =
+    static const QHash<QString, TUniformNames::types> UniformGLSLNames =
     {
     {"LightPos"   , LightVec3        },
     {"CamMatrix"  , CameraMat4x4     },
@@ -46,7 +53,6 @@ namespace TCommonUniformNames
     {""           , CustomMat4x4     }
     };
 }
-
 
 /*!
  * \class TShader
@@ -62,7 +68,7 @@ class TShader: public QObject
 
 public:
 
-    TShader(const QString& vertex, const QString& fragment);
+    TShader(const QString& vertex, const QString& fragment, QObject *parent=nullptr);
 
     ~TShader();
 
@@ -72,13 +78,17 @@ public:
 
     void bindProgram() const;
 
+    void releaseProgram() const;
+
+    TUniform* findUniform(QString name) const;
+
+
 protected:
 
+    QHash<QString, TUniform*> Uniforms;
 
-    QOpenGLShaderProgram* program;
-
-    QList<TUniform*> Uniforms;
+    QOpenGLShaderProgram* Program;
 
 };
 
-#endif //_THIS_CAMERA_
+#endif //_THIS_SHADER_
