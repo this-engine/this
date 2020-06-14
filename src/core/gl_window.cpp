@@ -75,6 +75,7 @@ void TGLWindow::initializeGL()
                 auto c = shader->findUniform("camMatrix");
                 auto p = shader->findUniform("projMatrix");
                 auto m = shader->findUniform("myMatrix");
+                //shader->set
             }
         }
             
