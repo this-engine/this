@@ -63,23 +63,7 @@ void TGLWindow::initializeGL()
     QOpenGLWindow::initializeGL();
     QOpenGLFunctions *glfunc = QOpenGLContext::currentContext()->functions();
 
-    for (auto draw_object : RenderObjects.values())
-    {
-        if(draw_object)
-        {
-            draw_object->init();
-            auto shader = draw_object->getShader();
-            if (shader)
-            {
-                auto w = shader->findUniform("worldMatrix");
-                auto c = shader->findUniform("camMatrix");
-                auto p = shader->findUniform("projMatrix");
-                auto m = shader->findUniform("myMatrix");
-                //shader->set
-            }
-        }
-            
-    }
+
 
     glfunc->glEnable(GL_DEPTH_TEST);
     glfunc->glEnable(GL_CULL_FACE);
@@ -92,26 +76,7 @@ void TGLWindow::resizeGL(int w, int h)
 
 }
 
-
-void TGLWindow::updateGL()
-{
-    #if 0
-    m_program->setUniformValue(m_projMatrixLoc, m_proj);
-    m_program->setUniformValue(m_camMatrixLoc, camera);
-    QMatrix4x4 wm = m_world;
-    wm.rotate(m_r, 1, 1, 0);
-    m_program->setUniformValue(m_worldMatrixLoc, wm);
-    QMatrix4x4 mm;
-    mm.setToIdentity();
-    mm.rotate(-m_r2, 1, 0, 0);
-    m_program->setUniformValue(m_myMatrixLoc, mm);
-    m_program->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));
-    #endif
-
-    
-}
-
-void TGLWindow::setVisual(QList<TVisual*> render_objects)
+void TGLWindow::onRenderObjectChanged(QList<TVisual*> render_objects)
 {
     QList<TVisual*> new_items;
 
@@ -165,3 +130,30 @@ void TGLWindow::paintGL()
     //f->glDrawArraysInstanced(GL_TRIANGLES, 0, m_logo.vertexCount(), 32 * 36);
 }
 
+
+
+void TGLWindow::initializeRenderObjects()
+{
+    for (auto draw_object : RenderObjects.values())
+    {
+        if(draw_object)
+        {
+            draw_object->init();
+            auto shader = draw_object->getShader();
+            if (shader)
+            {
+                auto w = shader->findUniform("worldMatrix");
+                w->setValue(QMatrix4x4());
+                auto c = shader->findUniform("camMatrix");
+                c->setValue(QMatrix4x4());
+                QObject::connect(Camera, &TCamera::transformMatrixChanged, c, &TUniform::onValueChanged);
+                auto p = shader->findUniform("projMatrix");
+                p->setValue(Camera->getProjectionMatrix());
+                QObject::connect(Camera, &TCamera::projectionMatrixChanged, p, &TUniform::onValueChanged);
+                auto m = shader->findUniform("myMatrix");
+                m->setValue(QMatrix4x4());
+            }
+        }
+            
+    }
+}

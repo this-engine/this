@@ -44,11 +44,8 @@ signals:
 
 public slots: 
 
-    // something changed we need to update the view
-    void updateGL();
-
     // add a object to render
-    void setVisual(QList<TVisual*> render_objects);
+    void onRenderObjectChanged(QList<TVisual*> render_objects);
 
 protected:
 
@@ -59,6 +56,8 @@ protected:
     QHash<QString, TVisual* > RenderObjects;
 
 private:
+
+    void initializeRenderObjects()
 
 
 };

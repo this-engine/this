@@ -40,6 +40,7 @@ public:
         return cam;
     }
 
+    QMatrix4x4 getProjectionMatrix() const { return Projection; }
 
 
     /*!
@@ -91,6 +92,21 @@ signals:
      *  \brief Camera uniform have changed values, connect to refresh your data
      */
     void cameraChanged();
+
+
+    /*!
+     *  \fn void TCamera::transformMatrixChanged()
+     *  \brief Camera uniform have changed values, connect to refresh your data
+     */
+    void transformMatrixChanged(QMatrix4x4 transform);
+
+
+    /*!
+     *  \fn void TCamera::projectionMatrixChanged()
+     *  \brief Camera uniform have changed values, connect to refresh your data
+     */
+    void projectionMatrixChanged(QMatrix4x4 transform);
+
 
 protected:
 

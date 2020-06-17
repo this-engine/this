@@ -51,9 +51,11 @@ public:
 
     inline const char* getNameCStr() const  {return PropertyName.toStdString().c_str();}
 
+    void setValue(QVariant value);
+
 public slots:
 
-    void setValue(QVariant value);
+    void onValueChanged(QVariant value) { setValue(value); }
 
 signals:
 

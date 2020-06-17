@@ -35,6 +35,7 @@ void TCamera::setResolution(QPoint value)
     const auto vertical_angle = verticalAngle(FOV,aspect_ratio);
     Projection.perspective(vertical_angle, aspect_ratio, 0.01f, 100.0f);
     emit cameraChanged();
+    emit projectionMatrixChanged(Projection);
 }
 
 void TCamera::setFOV(float value)
